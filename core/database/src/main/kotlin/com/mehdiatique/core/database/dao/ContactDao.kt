@@ -1,0 +1,24 @@
+package com.mehdiatique.core.database.dao
+
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.Update
+import com.mehdiatique.core.database.entity.ContactEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface ContactDao {
+    @Query("SELECT * FROM contacts")
+    fun getAllContacts(): Flow<List<ContactEntity>>
+
+    @Insert
+    suspend fun insertContact(contact: ContactEntity)
+
+    @Update
+    suspend fun updateContact(contact: ContactEntity)
+
+    @Delete
+    suspend fun deleteContact(contact: ContactEntity)
+}

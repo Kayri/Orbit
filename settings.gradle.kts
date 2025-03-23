@@ -22,4 +22,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Orbit"
 include(":app")
+include(":core:database")
 include(":design-system")
