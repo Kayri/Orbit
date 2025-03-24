@@ -1,6 +1,7 @@
 plugins {
     id("android-application-conventions")
     id("android-compose-conventions")
+    id("android-hilt-conventions")
 }
 
 android {
@@ -13,6 +14,8 @@ android {
     }
 }
 dependencies {
+    implementation(project(":design-system"))
+    implementation(project(":feature:contacts"))
     implementation(libs.androidx.material3)
 
     testImplementation(libs.junit)
