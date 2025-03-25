@@ -27,9 +27,9 @@ import androidx.navigation.NavController
  */
 @Composable
 fun OrbitBottomBar(
+    modifier: Modifier = Modifier,
     navController: NavController,
-    currentRoute: String?,
-    modifier: Modifier = Modifier
+    currentRoute: String?
 ) {
     val items = listOf(
         BottomNavItem(
