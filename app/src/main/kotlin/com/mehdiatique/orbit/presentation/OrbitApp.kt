@@ -1,60 +1,49 @@
 package com.mehdiatique.orbit.presentation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mehdiatique.orbit.navigation.OrbitRoute
 import com.mehdiatique.orbit.navigation.orbitNavGraph
 
+/**
+ * The main UI container for Orbit.
+ *
+ * This composable hosts the NavHost and overlays a global bottom bar and snackbar host.
+ * It does not use a global Scaffold for top bar or FAB – each feature screen (e.g. Contacts)
+ * defines its own Scaffold for those elements.
+ *
+ * The bottom bar is displayed globally and remains consistent across feature screens.
+ */
 @Composable
 fun OrbitApp() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val snackbarHostState = remember { SnackbarHostState() }
 
-    Scaffold(
-        topBar = {
-            when (currentRoute) {
-//                OrbitRoute.Contacts.route -> ContactsTopBar()
-//                OrbitRoute.Notes.route -> NotesTopBar()
-//                OrbitRoute.Tasks.route -> TasksTopBar()
-            }
-        },
-        bottomBar = {
-            OrbitBottomBar(navController = navController, currentRoute = currentRoute)
-        },
-        floatingActionButton = {
-            when (currentRoute) {
-                OrbitRoute.Contacts.route -> FloatingActionButton(onClick = {
-                    navController.navigate(OrbitRoute.AddContact.route)
-                }) { Icon(Icons.Filled.Add, contentDescription = "Add Contact") }
-                OrbitRoute.Notes.route -> FloatingActionButton(onClick = {
-                    navController.navigate(OrbitRoute.AddNote.route)
-                }) { Icon(Icons.Filled.Add, contentDescription = "Add Note") }
-                OrbitRoute.Tasks.route -> FloatingActionButton(onClick = {
-                    navController.navigate(OrbitRoute.AddTask.route)
-                }) { Icon(Icons.Filled.Add, contentDescription = "Add Task") }
-            }
-        }
-    ) { padding ->
+    Box(modifier = Modifier.fillMaxSize()) {
         NavHost(
             navController = navController,
             startDestination = OrbitRoute.Contacts.route,
-            modifier = Modifier.padding(padding)
+            modifier = Modifier.fillMaxSize()
         ) {
-            orbitNavGraph(snackbarHostState = snackbarHostState)
+            orbitNavGraph(navController = navController)
         }
+
+        OrbitBottomBar(
+            navController = navController,
+            currentRoute = currentRoute,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 8.dp)
+        )
     }
 }
