@@ -22,15 +22,18 @@ class ContactRepositoryImpl @Inject constructor(
             entities.map { it.toDomain() }
         }
 
+    override fun getContactById(id: Long): Flow<Contact> =
+        contactDao.getContactById(id = id).map { it.toDomain() }
+
     override suspend fun addContact(contact: Contact) {
-        contactDao.insertContact(contact.toEntity())
+        contactDao.insertContact(contact = contact.toEntity())
     }
 
     override suspend fun updateContact(contact: Contact) {
-        contactDao.updateContact(contact.toEntity())
+        contactDao.updateContact(contact = contact.toEntity())
     }
 
-    override suspend fun deleteContact(contact: Contact) {
-        contactDao.deleteContact(contact = contact.toEntity())
+    override suspend fun deleteContactById(id: Long) {
+        contactDao.deleteContactById(id = id)
     }
 }

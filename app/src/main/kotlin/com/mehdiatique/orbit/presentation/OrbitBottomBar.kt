@@ -9,16 +9,28 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
-data class BottomNavItem(
-    val route: String,
-    val label: String,
-    val icon: @Composable () -> Unit
-)
-
+/**
+ * A reusable bottom navigation bar for the Orbit app.
+ *
+ * This composable displays navigation items for core app features like Contacts, Tasks, and Notes.
+ * It highlights the selected item based on the current route and supports state restoration when navigating.
+ *
+ * The bottom bar is intended to be used globally across the app (e.g., in [OrbitApp]), while
+ * feature-specific UI such as top bars or FABs are managed by individual screens.
+ *
+ * @param navController The [NavController] used to perform navigation between routes.
+ * @param currentRoute The currently active navigation route, used to highlight the selected item.
+ * @param modifier Optional [Modifier] for styling the [NavigationBar].
+ */
 @Composable
-fun OrbitBottomBar(navController: NavController, currentRoute: String?) {
+fun OrbitBottomBar(
+    navController: NavController,
+    currentRoute: String?,
+    modifier: Modifier = Modifier
+) {
     val items = listOf(
         BottomNavItem(
             route = "contacts",
@@ -37,7 +49,7 @@ fun OrbitBottomBar(navController: NavController, currentRoute: String?) {
         )
     )
 
-    NavigationBar {
+    NavigationBar(modifier = modifier) {
         items.forEach { item ->
             NavigationBarItem(
                 selected = currentRoute == item.route,
@@ -58,3 +70,16 @@ fun OrbitBottomBar(navController: NavController, currentRoute: String?) {
         }
     }
 }
+
+/**
+ * Represents a single item in the bottom navigation bar.
+ *
+ * @param route The navigation route associated with this item.
+ * @param label The label text displayed below the icon.
+ * @param icon The composable icon shown in the navigation bar.
+ */
+data class BottomNavItem(
+    val route: String,
+    val label: String,
+    val icon: @Composable () -> Unit
+)

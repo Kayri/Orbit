@@ -1,22 +1,24 @@
 package com.mehdiatique.orbit.navigation
 
-import androidx.compose.material3.SnackbarHostState
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
 
-fun NavGraphBuilder.orbitNavGraph(snackbarHostState: SnackbarHostState) {
-//    composable(route = OrbitRoute.Contacts.route) { ContactsScreen(snackbarHostState = snackbarHostState) }
-//    composable(route = OrbitRoute.Notes.route) { NotesScreen(snackbarHostState = snackbarHostState) }
-//    composable(route = OrbitRoute.Tasks.route) { TasksScreen(snackbarHostState = snackbarHostState) }
+fun NavGraphBuilder.orbitNavGraph(navController: NavController) {
+//    contactsNavGraph(navController)
+//    tasksNavGraph(navController)
+//    notesNavGraph(navController)
 }
 
+/**
+ * Defines all top-level navigation routes used in the Orbit application.
+ *
+ * Each route corresponds to a major feature of the app (Contacts, Tasks, Notes).
+ * You can extend this sealed class to add new routes or support nested navigation in the future.
+ *
+ * @property route The unique string identifier used by the navigation system.
+ */
 sealed class OrbitRoute(val route: String) {
     object Contacts : OrbitRoute("contacts")
-    object AddContact : OrbitRoute("contacts/add")
-
     object Tasks : OrbitRoute("tasks")
-    object AddTask : OrbitRoute("tasks/add")
-
     object Notes : OrbitRoute("notes")
-    object AddNote : OrbitRoute("notes/add")
 }

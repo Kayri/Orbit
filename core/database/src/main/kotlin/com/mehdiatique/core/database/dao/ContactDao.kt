@@ -1,7 +1,6 @@
 package com.mehdiatique.core.database.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -13,12 +12,15 @@ interface ContactDao {
     @Query("SELECT * FROM contacts")
     fun getAllContacts(): Flow<List<ContactEntity>>
 
+    @Query("SELECT * FROM contacts WHERE contactId = :id")
+    fun getContactById(id: Long): Flow<ContactEntity>
+
     @Insert
     suspend fun insertContact(contact: ContactEntity)
 
     @Update
     suspend fun updateContact(contact: ContactEntity)
 
-    @Delete
-    suspend fun deleteContact(contact: ContactEntity)
+    @Query("DELETE FROM contacts WHERE contactId = :id")
+    suspend fun deleteContactById(id: Long)
 }
