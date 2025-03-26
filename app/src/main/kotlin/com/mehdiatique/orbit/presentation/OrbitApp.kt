@@ -1,13 +1,14 @@
 package com.mehdiatique.orbit.presentation
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -29,21 +30,28 @@ fun OrbitApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    val showBottomBar = remember(currentRoute) {
+        OrbitRoute.mainRoutes.any { it.route == currentRoute }
+    }
+
+    Column(
+        verticalArrangement = Arrangement.Bottom,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         NavHost(
             navController = navController,
             startDestination = OrbitRoute.Contacts.route,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.weight(1f)
         ) {
             orbitNavGraph(navController = navController)
         }
 
-        OrbitBottomBar(
-            navController = navController,
-            currentRoute = currentRoute,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 8.dp)
-        )
+        if (showBottomBar)
+            OrbitBottomBar(
+                navController = navController,
+                currentRoute = currentRoute
+            )
     }
 }

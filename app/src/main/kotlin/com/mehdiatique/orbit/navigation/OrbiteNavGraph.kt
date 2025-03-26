@@ -23,4 +23,8 @@ sealed class OrbitRoute(val route: String) {
     object Contacts : OrbitRoute(ContactsRoute.List.route)
     object Tasks : OrbitRoute("tasks")
     object Notes : OrbitRoute("notes")
+
+    companion object {
+        val mainRoutes = listOf(Contacts, Tasks, Notes)
+    }
 }
