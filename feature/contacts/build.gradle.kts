@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":design-system"))
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
