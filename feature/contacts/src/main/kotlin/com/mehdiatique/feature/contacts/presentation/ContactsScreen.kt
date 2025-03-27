@@ -46,7 +46,8 @@ import com.mehdiatique.orbit.design.theme.OrbitTheme
 @Composable
 fun ContactsScreen(
     viewModel: ContactsViewModel = hiltViewModel(),
-    navigateToDetail: (Long?) -> Unit
+    navigateToDetail: () -> Unit,
+    navigateToView: (Long) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val state: ContactsState by viewModel.state.collectAsStateWithLifecycle()
@@ -62,7 +63,8 @@ fun ContactsScreen(
         state = state,
         snackbarHostState = snackbarHostState,
         onSearchQueryChange = { viewModel.onEvent(ContactsEvent.SearchQueryChanged(it)) },
-        navigateToDetail = navigateToDetail
+        navigateToDetail = navigateToDetail,
+        navigateToView = navigateToView
     )
 }
 
@@ -81,7 +83,8 @@ fun ContactsScreenContent(
     state: ContactsState,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onSearchQueryChange: (String) -> Unit = {},
-    navigateToDetail: (Long?) -> Unit = {}
+    navigateToDetail: () -> Unit = {},
+    navigateToView: (Long) -> Unit = {},
 ) {
     Scaffold(
         contentWindowInsets = ScaffoldDefaults.contentWindowInsets.exclude(NavigationBarDefaults.windowInsets),
@@ -94,7 +97,7 @@ fun ContactsScreenContent(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
-            LargeFloatingActionButton(onClick = { navigateToDetail(null) }) {
+            LargeFloatingActionButton(onClick = { navigateToDetail() }) {
                 Icon(Icons.Default.Add, contentDescription = "Add Contact")
             }
         }
@@ -106,7 +109,7 @@ fun ContactsScreenContent(
                 .padding(16.dp)
         ) {
             items(items = state.filteredContacts) { contact ->
-                ContactItem(contact = contact, onClick = { navigateToDetail(contact.id) })
+                ContactItem(contact = contact, onClick = { navigateToView(contact.id) })
             }
         }
     }
