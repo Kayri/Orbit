@@ -15,8 +15,11 @@ interface ContactDao {
     @Query("SELECT * FROM contacts WHERE contactId = :id")
     fun getContactById(id: Long): Flow<ContactEntity>
 
+    @Query("SELECT * FROM contacts WHERE name LIKE '%' || :query || '%'")
+    fun searchContacts(query: String): Flow<List<ContactEntity>>
+
     @Insert
-    suspend fun insertContact(contact: ContactEntity)
+    suspend fun insertContact(contact: ContactEntity): Long
 
     @Update
     suspend fun updateContact(contact: ContactEntity)
