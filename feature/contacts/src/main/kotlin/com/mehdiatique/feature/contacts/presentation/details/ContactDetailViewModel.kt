@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.core.data.repository.ContactRepository
 import com.mehdiatique.feature.contacts.navigation.ContactsRoute
-import com.mehdiatique.feature.contacts.presentation.ContactsEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,19 +18,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel responsible for managing the state and business logic related to
- * viewing, creating, and editing a single contact within the Contacts feature.
+ * ViewModel for managing contact creation, editing, and viewing logic.
  *
- * This ViewModel handles both "add" and "edit" flows:
- * - If a contact ID is present in the [SavedStateHandle], it fetches and populates the state for editing.
- * - Otherwise, it starts with an empty [ContactDetailState] for creating a new contact.
- *
- * It exposes:
- * - A [StateFlow] of [ContactDetailState] to drive the UI.
- * - A [SharedFlow] of error messages to show one-time notifications (e.g., via Snackbar).
- *
- * @property contactRepository The repository used to retrieve, add, or update contacts.
- * @property savedStateHandle The saved state handle that may contain a "contactId" used to load an existing contact.
+ * Handles loading of existing contacts, form updates, saving, and one-time UI events
+ * such as navigation or showing messages.
  */
 @HiltViewModel
 class ContactDetailViewModel @Inject constructor(
@@ -41,8 +31,19 @@ class ContactDetailViewModel @Inject constructor(
 
     private val contactId: Long? = savedStateHandle.get<String>(ContactsRoute.Detail.ARG_ID)?.toLong()
 
-    private val _state = MutableStateFlow(ContactDetailState(isLoading = true))
+    private val _state = MutableStateFlow(
+        ContactDetailState(
+            mode = when {
+                contactId == null -> ContactDetailMode.ADD
+                else -> ContactDetailMode.VIEW
+            },
+            isLoading = contactId != null
+        )
+    )
     val state: StateFlow<ContactDetailState> = _state
+
+    private val _uiEvent = MutableSharedFlow<ContactDetailUiEvent>()
+    val uiEvent: SharedFlow<ContactDetailUiEvent> = _uiEvent
 
     init {
         contactId?.let { id ->
@@ -58,8 +59,7 @@ class ContactDetailViewModel @Inject constructor(
                         }
                     }
                     .collect { contact ->
-                        _state.value = ContactDetailState.from(contact)
-                        _state.update { it.copy(isLoading = false) }
+                        _state.update { it.copy(contact = contact, isLoading = false) }
                     }
             }
         }
@@ -72,17 +72,40 @@ class ContactDetailViewModel @Inject constructor(
      */
     fun onEvent(event: ContactDetailEvent) {
         when (event) {
-            is ContactDetailEvent.NameChanged -> _state.update { it.copy(name = event.name) }
-            is ContactDetailEvent.EmailChanged -> _state.update { it.copy(email = event.email) }
-            is ContactDetailEvent.PhoneChanged -> _state.update { it.copy(phone = event.phone) }
-            is ContactDetailEvent.CompanyChanged -> _state.update { it.copy(company = event.company) }
-            is ContactDetailEvent.NotesChanged -> _state.update { it.copy(notes = event.notes) }
-            is ContactDetailEvent.SaveContact -> {
-                saveContact()
+            is ContactDetailEvent.NameChanged -> updateContact { it.copy(name = event.name) }
+            is ContactDetailEvent.EmailChanged -> updateContact { it.copy(email = event.email) }
+            is ContactDetailEvent.PhoneChanged -> updateContact { it.copy(phone = event.phone) }
+            is ContactDetailEvent.CompanyChanged -> updateContact { it.copy(company = event.company) }
+            is ContactDetailEvent.NotesChanged -> updateContact { it.copy(notes = event.notes) }
+
+            is ContactDetailEvent.CloseEdit -> {
+                _state.update { it.copy(mode = ContactDetailMode.VIEW) }
             }
 
-            is ContactDetailEvent.Cancel -> {
-                _state.value = ContactDetailState() // Reset form
+            is ContactDetailEvent.EditContact -> {
+                _state.update { it.copy(mode = ContactDetailMode.EDIT) }
+            }
+
+            is ContactDetailEvent.SaveContact -> saveContact()
+
+            is ContactDetailEvent.AddNote -> {
+                _state.value.contact?.id?.let { contactId ->
+                    onUiEvent(ContactDetailUiEvent.NavigateToAddNote(contactId))
+                }
+            }
+
+            is ContactDetailEvent.AddTask -> {
+                _state.value.contact?.id?.let { contactId ->
+                    onUiEvent(ContactDetailUiEvent.NavigateToAddTask(contactId))
+                }
+            }
+
+            is ContactDetailEvent.OpenNote -> {
+                onUiEvent(ContactDetailUiEvent.NavigateToNote(event.noteId))
+            }
+
+            is ContactDetailEvent.OpenTask -> {
+                onUiEvent(ContactDetailUiEvent.NavigateToTask(event.taskId))
             }
 
             is ContactDetailEvent.ErrorShown -> {
@@ -92,33 +115,53 @@ class ContactDetailViewModel @Inject constructor(
     }
 
     /**
-     * Saves the current contact:
-     * - Adds a new contact if no contact ID is present.
-     * - Updates the existing contact otherwise.
+     * Handles One-time UI events such as closing the screen, confirming a save,
+     * or navigating to related features like tasks or notes.
      *
-     * Emits an error message to [errorMessage] if the operation fails.
+     * @param event The event to process.
      */
-    fun saveContact() {
+    fun onUiEvent(event: ContactDetailUiEvent) {
         viewModelScope.launch {
-            val currentState = _state.value
-            val newContact = Contact(
-                id = contactId ?: 0, // Auto-generated by Room
-                name = currentState.name,
-                email = currentState.email.takeIf { it.isNotBlank() },
-                phone = currentState.phone.takeIf { it.isNotBlank() },
-                company = currentState.company.takeIf { it.isNotBlank() },
-                notes = currentState.notes.takeIf { it.isNotBlank() },
-                createdAt = currentState.createdAt ?: System.currentTimeMillis()
-            )
+            _uiEvent.emit(event)
+        }
+    }
 
+    private fun updateContact(modify: (Contact) -> Contact) {
+        val currentContact = _state.value.contact ?: Contact(
+            id = TEMP_ID, // Auto-generated by Room
+            name = "",
+            email = null,
+            phone = null,
+            company = null,
+            notes = null,
+            createdAt = System.currentTimeMillis()
+        )
+        _state.update {
+            it.copy(contact = modify(currentContact))
+        }
+    }
+
+
+    private fun saveContact() {
+        val contact = _state.value.contact ?: return
+        viewModelScope.launch {
             try {
-                if (contactId == null)
-                    contactRepository.addContact(newContact)
-                else
-                    contactRepository.updateContact(newContact)
+                if (contact.id == TEMP_ID) {
+                    // New contact — insert and update state with the returned ID
+                    val newId = contactRepository.addContact(contact)
+                    val updatedContact = contact.copy(id = newId)
+                    _state.update { it.copy(contact = updatedContact) }
+                } else
+                    contactRepository.updateContact(contact)
+
+                onUiEvent(ContactDetailUiEvent.ContactSaved)
             } catch (e: Exception) {
                 _state.update { it.copy(error = e.message ?: e.cause?.message ?: "Unknown error") }
             }
         }
+    }
+
+    companion object {
+        private const val TEMP_ID = -1L
     }
 }
