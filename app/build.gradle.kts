@@ -16,6 +16,7 @@ android {
 dependencies {
     implementation(project(":design-system"))
     implementation(project(":feature:contacts"))
+    implementation(project(":feature:notes"))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation)
 

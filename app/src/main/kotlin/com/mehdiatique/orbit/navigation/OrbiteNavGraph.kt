@@ -4,11 +4,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.mehdiatique.feature.contacts.navigation.ContactsRoute
 import com.mehdiatique.feature.contacts.navigation.contactsNavGraph
+import com.mehdiatique.feature.notes.navigation.NotesRoute
+import com.mehdiatique.feature.notes.navigation.notesNavGraph
 
 fun NavGraphBuilder.orbitNavGraph(navController: NavController) {
     contactsNavGraph(navController)
+    notesNavGraph(navController)
 //    tasksNavGraph(navController)
-//    notesNavGraph(navController)
 }
 
 /**
@@ -21,8 +23,8 @@ fun NavGraphBuilder.orbitNavGraph(navController: NavController) {
  */
 sealed class OrbitRoute(val route: String) {
     object Contacts : OrbitRoute(ContactsRoute.List.route)
+    object Notes : OrbitRoute(NotesRoute.List.route)
     object Tasks : OrbitRoute("tasks")
-    object Notes : OrbitRoute("notes")
 
     companion object {
         val mainRoutes = listOf(Contacts, Tasks, Notes)

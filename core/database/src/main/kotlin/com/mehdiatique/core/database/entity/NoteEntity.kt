@@ -21,7 +21,7 @@ data class NoteEntity(
     @PrimaryKey(autoGenerate = true) val noteId: Long = 0,
     val contactOwnerId: Long? = null, // Optional link
     val content: String,
+    val title: String,
     val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long? = null,
-    val title: String? = null
+    val updatedAt: Long? = null
 )
