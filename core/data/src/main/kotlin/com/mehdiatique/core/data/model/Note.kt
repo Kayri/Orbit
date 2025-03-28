@@ -11,3 +11,14 @@ data class Note(
     val createdAt: Long,
     val updatedAt: Long?
 )
+
+
+/** Idea for later:
+ *
+ * tags:	List	For categorizing notes (e.g. “meeting”, “idea”)
+ * isPinned:	Boolean	For prioritizing or keeping notes at top
+ * isArchived:	Boolean	For hiding old notes without deleting
+ * colorHex:	String	To visually separate notes (like Google Keep)
+ * isSynced:	Boolean	For future sync/cloud storage feature
+ * attachments:	List	For URIs to images, files, etc. (future-proof)
+ * */
