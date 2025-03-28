@@ -162,6 +162,6 @@ class ContactDetailViewModel @Inject constructor(
     }
 
     companion object {
-        private const val TEMP_ID = -1L
+        private const val TEMP_ID = 0L
     }
 }

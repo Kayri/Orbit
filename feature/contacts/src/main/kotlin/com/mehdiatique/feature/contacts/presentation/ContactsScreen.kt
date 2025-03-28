@@ -106,7 +106,7 @@ fun ContactsScreenContent(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            items(items = state.filteredContacts) { contact ->
+            items(items = state.contacts) { contact ->
                 ContactItem(contact = contact, onClick = { navigateToDetail(contact.id) })
             }
         }
@@ -161,8 +161,7 @@ fun ContactsScreenPreview() {
         val contact = Contact(id = 1, name = "Ada Lovelace", email = "ada@code.com", null, null, null, 0)
         ContactsScreenContent(
             state = ContactsState(
-                contacts = listOf(contact, contact, contact),
-                filteredContacts = listOf(contact, contact, contact),
+                contacts = listOf(contact, contact, contact)
             )
         )
     }
