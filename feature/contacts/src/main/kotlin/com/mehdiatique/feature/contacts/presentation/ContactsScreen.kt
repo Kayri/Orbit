@@ -1,5 +1,9 @@
 package com.mehdiatique.feature.contacts.presentation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope.ResizeMode
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,11 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
@@ -31,8 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mehdiatique.core.data.model.Contact
+import com.mehdiatique.orbit.design.components.AnimatedFab
 import com.mehdiatique.orbit.design.components.SearchBar
 import com.mehdiatique.orbit.design.theme.OrbitTheme
+import com.mehdiatique.orbit.design.transition.LocalAnimatedVisibilityScope
+import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
 
 /**
  * The main screen for displaying and managing contacts.
@@ -94,9 +97,7 @@ fun ContactsScreenContent(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
-            LargeFloatingActionButton(onClick = { navigateToDetail(null) }) {
-                Icon(Icons.Default.Add, contentDescription = "Add Contact")
-            }
+            AnimatedFab(contentDescription = "Add Contact") { navigateToDetail(null) }
         }
     ) { innerPadding ->
         LazyColumn(
@@ -118,22 +119,35 @@ fun ContactsScreenContent(
  * @param contact The contact data to display.
  * @param onClick Callback triggered when the item is tapped.
  */
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ContactItem(contact: Contact, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+    val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
+
+    with(sharedTransitionScope) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .sharedBounds(
+                    sharedContentState = rememberSharedContentState(key = "contact-${contact.id}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    enter = fadeIn(),
+                    exit = fadeOut(),
+                    resizeMode = ResizeMode.ScaleToBounds()
+                ),
+            onClick = onClick
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = contact.name, style = MaterialTheme.typography.titleMedium)
-                contact.email?.let {
-                    Text(text = it, style = MaterialTheme.typography.bodyMedium)
+            Row(
+                modifier = Modifier.padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = contact.name, style = MaterialTheme.typography.titleMedium)
+                    contact.email?.let {
+                        Text(text = it, style = MaterialTheme.typography.bodyMedium)
+                    }
                 }
             }
         }
