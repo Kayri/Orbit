@@ -38,9 +38,10 @@ fun ContactDetailContent(
     snackbarHostState: SnackbarHostState,
     onEvent: (ContactDetailEvent) -> Unit,
     onUiEvent: (ContactDetailUiEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 title = {
