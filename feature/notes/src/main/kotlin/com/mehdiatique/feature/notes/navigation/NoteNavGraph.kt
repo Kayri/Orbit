@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mehdiatique.feature.notes.presentation.NotesScreen
+import com.mehdiatique.feature.notes.presentation.details.NoteDetailScreen
 
 fun NavGraphBuilder.notesNavGraph(navController: NavController) {
     composable(route = NotesRoute.List.route) {
@@ -23,9 +24,9 @@ fun NavGraphBuilder.notesNavGraph(navController: NavController) {
             }
         ),
     ) {
-//        NotesDetailScreen(
-//            onClose = { navController.popBackStack() },
-//        )
+        NoteDetailScreen(
+            onClose = { navController.popBackStack() },
+        )
     }
 }
 
