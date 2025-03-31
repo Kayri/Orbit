@@ -10,6 +10,6 @@ data class ContactEntity(
     val email: String? = null,
     val phone: String? = null,
     val company: String? = null,
-    val notes: String? = null,
+    val description: String? = null,
     val createdAt: Long = System.currentTimeMillis()
 )

@@ -156,7 +156,7 @@ fun NoteItem(note: Note, onClick: () -> Unit) {
 @Composable
 fun NotesScreenPreview() {
     OrbitTheme {
-        val note = Note(id = 1, content = "Content of a note", title = "Note Title", null, 0, null)
+        val note = Note(id = 1, content = "Content of a note", title = "Note Title", createdAt = 0)
         NotesScreenContent(
             state = NotesState(
                 notes = listOf(note, note, note),

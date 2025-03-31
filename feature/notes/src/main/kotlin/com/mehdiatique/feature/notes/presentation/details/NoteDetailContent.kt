@@ -118,9 +118,7 @@ fun NoteDetailContentPreview() {
             id = 1L,
             title = "Title of the note",
             content = "This is the content of the note. Bla bla bla...",
-            ownerId = null,
             createdAt = 0,
-            updatedAt = null
         ),
         snackbarHostState = SnackbarHostState(),
         onEvent = {},

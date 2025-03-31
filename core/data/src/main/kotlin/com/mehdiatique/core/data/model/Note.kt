@@ -7,9 +7,10 @@ data class Note(
     val id: Long,
     val content: String,
     val title: String,
-    val ownerId: Long?,
     val createdAt: Long,
-    val updatedAt: Long?
+    val updatedAt: Long? = null,
+    val owner: Contact? = null,
+    val task: Task? = null,
 )
 
 

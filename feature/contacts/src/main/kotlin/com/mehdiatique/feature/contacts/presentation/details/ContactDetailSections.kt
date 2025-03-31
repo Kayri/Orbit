@@ -55,7 +55,7 @@ fun ContactDetailEditSection(
             .padding(top = 8.dp)
     )
     OutlinedTextField(
-        value = contact?.notes.orEmpty(),
+        value = contact?.description.orEmpty(),
         onValueChange = { onEvent(ContactDetailEvent.NotesChanged(it)) },
         label = { Text("Notes") },
         modifier = Modifier
@@ -73,7 +73,7 @@ fun ContactInfoSection(contact: Contact) {
         contact.email?.let { Text("📧 $it") }
         contact.phone?.let { Text("📞 $it") }
         contact.company?.let { Text("🏢 $it") }
-        contact.notes?.let { Text("📝 ${contact.notes}") }
+        contact.description?.let { Text("📝 ${contact.description}") }
     }
 }
 
@@ -117,7 +117,7 @@ fun ContactDetailEditSectionPreview() {
                 email = "ada@code.com",
                 phone = "123456789",
                 company = "Engine Inc.",
-                notes = "Note about Ada",
+                description = "Note about Ada",
                 createdAt = 0
             ),
             onEvent = {}
@@ -136,7 +136,7 @@ fun ContactInfoSectionPreview() {
                 email = "charles@calc.com",
                 phone = "987654321",
                 company = "Difference Engines",
-                notes = "Interested in machine design.",
+                description = "Interested in machine design.",
                 createdAt = 0
             )
         )

@@ -158,7 +158,7 @@ fun ContactItem(contact: Contact, onClick: () -> Unit) {
 @Composable
 fun ContactsScreenPreview() {
     OrbitTheme {
-        val contact = Contact(id = 1, name = "Ada Lovelace", email = "ada@code.com", null, null, null, 0)
+        val contact = Contact(id = 1, name = "Ada Lovelace", email = "ada@code.com", createdAt = 0)
         ContactsScreenContent(
             state = ContactsState(
                 contacts = listOf(contact, contact, contact)

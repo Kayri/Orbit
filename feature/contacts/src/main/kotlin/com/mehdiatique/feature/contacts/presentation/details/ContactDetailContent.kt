@@ -138,7 +138,7 @@ fun ContactDetailContentPreview() {
             email = "ada@code.com",
             phone = "1234567890",
             company = "Analytical Engine Inc.",
-            notes = "Loves math and programming.",
+            description = "Loves math and programming.",
             createdAt = System.currentTimeMillis()
         ),
         snackbarHostState = SnackbarHostState(),

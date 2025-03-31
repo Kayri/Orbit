@@ -45,7 +45,6 @@ fun NoteInfoSection(note: Note) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(note.title)
         Text(note.content)
-        note.ownerId?.let { Text("OwnerID: $it") }
     }
 }
 
@@ -58,9 +57,7 @@ fun NoteDetailEditSectionPreview() {
                 id = -1,
                 content = "Ada Lovelace",
                 title = "ada@code.com",
-                ownerId = 1,
                 createdAt = 0,
-                updatedAt = 2
             ),
             onEvent = {}
         )
@@ -76,9 +73,7 @@ fun NoteInfoSectionPreview() {
                 id = -1,
                 content = "Content of the note",
                 title = "Note Title",
-                ownerId = 1,
                 createdAt = 0,
-                updatedAt = 2
             ),
         )
     }
