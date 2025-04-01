@@ -44,10 +44,7 @@ fun ContactDetailScreen(
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                is ContactDetailUiEvent.ContactSaved -> {
-                    viewModel.onEvent(ContactDetailEvent.CloseEdit)
-                }
-
+                is ContactDetailUiEvent.ContactSaved -> viewModel.onEvent(ContactDetailEvent.CloseEdit)
                 is ContactDetailUiEvent.CloseScreen -> onClose()
                 is ContactDetailUiEvent.NavigateToAddNote -> onNavigateToAddNote(event.contactId)
                 is ContactDetailUiEvent.NavigateToNote -> onNavigateToNote(event.noteId)

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.core.data.repository.ContactRepository
-import com.mehdiatique.feature.contacts.navigation.ContactsRoute
+import com.mehdiatique.core.navigation_contract.ContactNav
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +29,7 @@ class ContactDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val contactId: Long? = savedStateHandle.get<String>(ContactsRoute.Detail.ARG_ID)?.toLong()
+    private val contactId: Long? = savedStateHandle.get<String>(ContactNav.ARG_CONTACT_ID)?.toLong()
 
     private val _state = MutableStateFlow(
         ContactDetailState(
@@ -77,40 +77,21 @@ class ContactDetailViewModel @Inject constructor(
             is ContactDetailEvent.PhoneChanged -> updateContact { it.copy(phone = event.phone) }
             is ContactDetailEvent.CompanyChanged -> updateContact { it.copy(company = event.company) }
             is ContactDetailEvent.DescriptionChanged -> updateContact { it.copy(description = event.description) }
-
-            is ContactDetailEvent.CloseEdit -> {
-                _state.update { it.copy(mode = ContactDetailMode.VIEW) }
-            }
-
-            is ContactDetailEvent.EditContact -> {
-                _state.update { it.copy(mode = ContactDetailMode.EDIT) }
-            }
-
+            is ContactDetailEvent.CloseEdit -> _state.update { it.copy(mode = ContactDetailMode.VIEW) }
+            is ContactDetailEvent.EditContact -> _state.update { it.copy(mode = ContactDetailMode.EDIT) }
             is ContactDetailEvent.SaveContact -> saveContact()
-
-            is ContactDetailEvent.AddNote -> {
-                _state.value.contact?.id?.let { contactId ->
-                    onUiEvent(ContactDetailUiEvent.NavigateToAddNote(contactId))
-                }
+            is ContactDetailEvent.AddNote -> _state.value.contact?.id?.let { contactId ->
+                onUiEvent(ContactDetailUiEvent.NavigateToAddNote(contactId))
             }
 
-            is ContactDetailEvent.AddTask -> {
+            is ContactDetailEvent.AddTask ->
                 _state.value.contact?.id?.let { contactId ->
                     onUiEvent(ContactDetailUiEvent.NavigateToAddTask(contactId))
                 }
-            }
 
-            is ContactDetailEvent.OpenNote -> {
-                onUiEvent(ContactDetailUiEvent.NavigateToNote(event.noteId))
-            }
-
-            is ContactDetailEvent.OpenTask -> {
-                onUiEvent(ContactDetailUiEvent.NavigateToTask(event.taskId))
-            }
-
-            is ContactDetailEvent.ErrorShown -> {
-                _state.update { it.copy(error = null) }
-            }
+            is ContactDetailEvent.OpenNote -> onUiEvent(ContactDetailUiEvent.NavigateToNote(event.noteId))
+            is ContactDetailEvent.OpenTask -> onUiEvent(ContactDetailUiEvent.NavigateToTask(event.taskId))
+            is ContactDetailEvent.ErrorShown -> _state.update { it.copy(error = null) }
         }
     }
 

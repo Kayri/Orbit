@@ -21,8 +21,7 @@ import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
 fun NoteDetailScreen(
     viewModel: NoteDetailViewModel = hiltViewModel(),
     onClose: () -> Unit,
-//    onNavigateToAddNote: (Long) -> Unit,
-//    onNavigateToNote: (Long) -> Unit,
+    onNavigateToContact: (Long) -> Unit,
 //    onNavigateToAddTask: (Long) -> Unit,
 //    onNavigateToTask: (Long) -> Unit
 ) {
@@ -44,13 +43,9 @@ fun NoteDetailScreen(
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                is NoteDetailUiEvent.NoteSaved -> {
-                    viewModel.onEvent(NoteDetailEvent.CloseEdit)
-                }
-
+                is NoteDetailUiEvent.NoteSaved -> viewModel.onEvent(NoteDetailEvent.CloseEdit)
                 is NoteDetailUiEvent.CloseScreen -> onClose()
-//                is ContactDetailUiEvent.NavigateToAddNote -> onNavigateToAddNote(event.contactId)
-//                is ContactDetailUiEvent.NavigateToNote -> onNavigateToNote(event.noteId)
+                is NoteDetailUiEvent.NavigateToContact -> onNavigateToContact(event.contactId)
 //                is ContactDetailUiEvent.NavigateToAddTask -> onNavigateToAddTask(event.contactId)
 //                is ContactDetailUiEvent.NavigateToTask -> onNavigateToTask(event.taskId)
             }

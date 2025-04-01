@@ -1,9 +1,11 @@
 package com.mehdiatique.feature.notes.presentation.details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,11 +43,26 @@ fun NoteDetailEditSection(
  * Read-only section that displays the note's information.
  */
 @Composable
-fun NoteInfoSection(note: Note) {
+fun NoteInfoSection(
+    note: Note,
+    onEvent: (NoteDetailEvent) -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text("title: " + note.title)
         Text("content: " + note.content)
-        Text("OwnerName: " + note.owner?.name)
+        note.owner?.let { contact ->
+            OwnerCard(name = contact.name, onClick = { onEvent(NoteDetailEvent.OpenContact(contact.id)) })
+        }
+    }
+}
+
+@Composable
+fun OwnerCard(name: String, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .clickable { onClick() }
+    ) {
+        Text("Owner: $name", modifier = Modifier.padding(8.dp))
     }
 }
 
@@ -76,6 +93,7 @@ fun NoteInfoSectionPreview() {
                 title = "Note Title",
                 createdAt = 0,
             ),
+            onEvent = {}
         )
     }
 }

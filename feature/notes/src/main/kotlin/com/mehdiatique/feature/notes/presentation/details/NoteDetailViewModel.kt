@@ -61,20 +61,11 @@ class NoteDetailViewModel @Inject constructor(
             is NoteDetailEvent.ContentChanged -> updateNote { it.copy(content = event.content) }
             is NoteDetailEvent.TitleChanged -> updateNote { it.copy(title = event.title) }
             is NoteDetailEvent.ContactChanged -> event.contactId?.let { id -> updateNote { it.copy(owner = Contact(id = id)) } }
-
-            is NoteDetailEvent.CloseEdit -> {
-                _state.update { it.copy(mode = NoteDetailMode.VIEW) }
-            }
-
-            is NoteDetailEvent.EditNote -> {
-                _state.update { it.copy(mode = NoteDetailMode.EDIT) }
-            }
-
+            is NoteDetailEvent.CloseEdit -> _state.update { it.copy(mode = NoteDetailMode.VIEW) }
+            is NoteDetailEvent.EditNote -> _state.update { it.copy(mode = NoteDetailMode.EDIT) }
             is NoteDetailEvent.SaveNote -> saveNote()
-
-            is NoteDetailEvent.ErrorShown -> {
-                _state.update { it.copy(error = null) }
-            }
+            is NoteDetailEvent.ErrorShown -> _state.update { it.copy(error = null) }
+            is NoteDetailEvent.OpenContact -> onUiEvent(NoteDetailUiEvent.NavigateToContact(event.contactId))
         }
     }
 

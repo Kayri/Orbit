@@ -5,15 +5,14 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.mehdiatique.core.navigation_contract.ContactNav
 import com.mehdiatique.core.navigation_contract.NotesNav
 import com.mehdiatique.feature.notes.presentation.NotesScreen
 import com.mehdiatique.feature.notes.presentation.details.NoteDetailScreen
 
 fun NavGraphBuilder.notesNavGraph(navController: NavController) {
     composable(route = NotesRoute.List.route) {
-        NotesScreen(
-            navigateToDetail = { noteId -> navController.navigate(NotesNav.detailRoute(noteId = noteId)) }
-        )
+        NotesScreen(navigateToDetail = { noteId -> navController.navigate(NotesNav.detailRoute(noteId = noteId)) })
     }
     composable(
         route = NotesRoute.Detail.route,
@@ -32,6 +31,12 @@ fun NavGraphBuilder.notesNavGraph(navController: NavController) {
     ) {
         NoteDetailScreen(
             onClose = { navController.popBackStack() },
+            onNavigateToContact = { contactId ->
+                navController.navigate(ContactNav.detailRoute(contactId = contactId)) {
+                    popUpTo(ContactNav.routePattern()) { inclusive = false }
+                    launchSingleTop = true
+                }
+            }
         )
     }
 }

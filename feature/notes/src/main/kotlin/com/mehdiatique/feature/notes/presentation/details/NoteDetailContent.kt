@@ -103,7 +103,7 @@ fun NoteDetailBody(
             NoteDetailEditSection(note = note, onEvent = onEvent)
         } else {
             note?.let {
-                NoteInfoSection(it)
+                NoteInfoSection(note = it, onEvent = onEvent)
             }
         }
     }
