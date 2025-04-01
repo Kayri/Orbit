@@ -24,4 +24,7 @@ rootProject.name = "Orbit"
 include(":app")
 include(":core:data")
 include(":core:database")
+include(":core:navigation-contract")
 include(":design-system")
+include(":feature:contacts")
+include(":feature:notes")

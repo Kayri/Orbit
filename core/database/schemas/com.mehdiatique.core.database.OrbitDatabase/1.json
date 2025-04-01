@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "e8e452ae5d1fedd845a8f9610d44e42c",
+    "identityHash": "5fcb8814e5a04dd8eacdb6cf5e0bab4c",
     "entities": [
       {
         "tableName": "contacts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contactId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `email` TEXT, `phone` TEXT, `company` TEXT, `notes` TEXT, `createdAt` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contactId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `email` TEXT, `phone` TEXT, `company` TEXT, `description` TEXT, `createdAt` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "contactId",
@@ -39,8 +39,8 @@
             "notNull": false
           },
           {
-            "fieldPath": "notes",
-            "columnName": "notes",
+            "fieldPath": "description",
+            "columnName": "description",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -62,19 +62,13 @@
       },
       {
         "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`taskId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `contactOwnerId` INTEGER, `title` TEXT NOT NULL, `description` TEXT, `isDone` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER, `dueAt` INTEGER, `completedAt` INTEGER, `priority` INTEGER NOT NULL, FOREIGN KEY(`contactOwnerId`) REFERENCES `contacts`(`contactId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`taskId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `description` TEXT, `isDone` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER, `dueAt` INTEGER, `completedAt` INTEGER, `priority` INTEGER NOT NULL, `contactOwnerId` INTEGER, `linkedNoteId` INTEGER, FOREIGN KEY(`contactOwnerId`) REFERENCES `contacts`(`contactId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`linkedNoteId`) REFERENCES `notes`(`noteId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "taskId",
             "columnName": "taskId",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "contactOwnerId",
-            "columnName": "contactOwnerId",
-            "affinity": "INTEGER",
-            "notNull": false
           },
           {
             "fieldPath": "title",
@@ -123,6 +117,18 @@
             "columnName": "priority",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "contactOwnerId",
+            "columnName": "contactOwnerId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "linkedNoteId",
+            "columnName": "linkedNoteId",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -140,6 +146,15 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_tasks_contactOwnerId` ON `${TABLE_NAME}` (`contactOwnerId`)"
+          },
+          {
+            "name": "index_tasks_linkedNoteId",
+            "unique": false,
+            "columnNames": [
+              "linkedNoteId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_tasks_linkedNoteId` ON `${TABLE_NAME}` (`linkedNoteId`)"
           }
         ],
         "foreignKeys": [
@@ -153,12 +168,23 @@
             "referencedColumns": [
               "contactId"
             ]
+          },
+          {
+            "table": "notes",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "linkedNoteId"
+            ],
+            "referencedColumns": [
+              "noteId"
+            ]
           }
         ]
       },
       {
         "tableName": "notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`noteId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `contactOwnerId` INTEGER, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER, `title` TEXT, FOREIGN KEY(`contactOwnerId`) REFERENCES `contacts`(`contactId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`noteId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `content` TEXT NOT NULL, `title` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER, `contactOwnerId` INTEGER, FOREIGN KEY(`contactOwnerId`) REFERENCES `contacts`(`contactId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "noteId",
@@ -167,14 +193,14 @@
             "notNull": true
           },
           {
-            "fieldPath": "contactOwnerId",
-            "columnName": "contactOwnerId",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
             "fieldPath": "content",
             "columnName": "content",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -191,9 +217,9 @@
             "notNull": false
           },
           {
-            "fieldPath": "title",
-            "columnName": "title",
-            "affinity": "TEXT",
+            "fieldPath": "contactOwnerId",
+            "columnName": "contactOwnerId",
+            "affinity": "INTEGER",
             "notNull": false
           }
         ],
@@ -232,7 +258,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e8e452ae5d1fedd845a8f9610d44e42c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5fcb8814e5a04dd8eacdb6cf5e0bab4c')"
     ]
   }
 }

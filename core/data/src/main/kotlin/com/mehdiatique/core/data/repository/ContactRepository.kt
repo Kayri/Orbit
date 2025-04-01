@@ -8,7 +8,9 @@ import kotlinx.coroutines.flow.Flow
  */
 interface ContactRepository {
     fun getAllContacts(): Flow<List<Contact>>
-    suspend fun addContact(contact: Contact)
+    fun getContactById(id: Long): Flow<Contact>
+    fun searchContacts(query: String): Flow<List<Contact>>
+    suspend fun addContact(contact: Contact): Long
     suspend fun updateContact(contact: Contact)
-    suspend fun deleteContact(contact: Contact)
+    suspend fun deleteContactById(id: Long)
 }

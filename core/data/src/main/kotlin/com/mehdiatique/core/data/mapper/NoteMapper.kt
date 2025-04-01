@@ -2,28 +2,40 @@ package com.mehdiatique.core.data.mapper
 
 import com.mehdiatique.core.data.model.Note
 import com.mehdiatique.core.database.entity.NoteEntity
+import com.mehdiatique.core.database.relationship.NoteWithRelations
 
 /**
- * Extension function to convert a NoteEntity (from the database layer)
- * into a Note domain model.
+ * Maps [NoteWithRelations] (including owner and linked task) to [Note] domain model.
+ */
+fun NoteWithRelations.toDomain() = Note(
+    id = note.noteId,
+    content = note.content,
+    title = note.title,
+    createdAt = note.createdAt,
+    updatedAt = note.updatedAt,
+    owner = owner?.toDomain(),
+    task = task?.toDomain()
+)
+
+/**
+ * Maps [NoteEntity] to [Note] domain model without relations.
  */
 fun NoteEntity.toDomain() = Note(
     id = noteId,
     content = content,
     title = title,
-    ownerId = contactOwnerId,
     createdAt = createdAt,
-    updatedAt = updatedAt
+    updatedAt = updatedAt,
 )
 
 /**
- * Extension function to convert a Note domain model into a NoteEntity.
+ * Maps [Note] domain model to [NoteEntity] for database operations.
  */
 fun Note.toEntity() = NoteEntity(
     noteId = id,
     content = content,
     title = title,
-    contactOwnerId = ownerId,
     createdAt = createdAt,
-    updatedAt = updatedAt
+    updatedAt = updatedAt,
+    contactOwnerId = owner?.id
 )

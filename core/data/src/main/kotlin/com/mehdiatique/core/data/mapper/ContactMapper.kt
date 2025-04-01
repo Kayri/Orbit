@@ -2,10 +2,25 @@ package com.mehdiatique.core.data.mapper
 
 import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.core.database.entity.ContactEntity
+import com.mehdiatique.core.database.relationship.ContactWithRelations
 
 /**
- * Extension function to convert a ContactEntity (from the database layer)
- * into a Contact domain model.
+ * Maps [ContactWithRelations] (including notes and tasks) to [Contact] domain model.
+ */
+fun ContactWithRelations.toDomain() = Contact(
+    id = contact.contactId,
+    name = contact.name,
+    email = contact.email,
+    phone = contact.phone,
+    company = contact.company,
+    description = contact.description,
+    createdAt = contact.createdAt,
+    noteList = notes.map { it.toDomain()},
+    taskList = tasks.map { it.toDomain() }
+)
+
+/**
+ * Maps [ContactEntity] to [Contact] domain model without relations.
  */
 fun ContactEntity.toDomain() = Contact(
     id = contactId,
@@ -13,12 +28,12 @@ fun ContactEntity.toDomain() = Contact(
     email = email,
     phone = phone,
     company = company,
-    notes = notes,
-    createdAt = createdAt
+    description = description,
+    createdAt = createdAt,
 )
 
 /**
- * Extension function to convert a Contact domain model into a ContactEntity.
+ * Maps [Contact] domain model to [ContactEntity] for database operations.
  */
 fun Contact.toEntity() = ContactEntity(
     contactId = id,
@@ -26,6 +41,6 @@ fun Contact.toEntity() = ContactEntity(
     email = email,
     phone = phone,
     company = company,
-    notes = notes,
+    description = description,
     createdAt = createdAt
 )
