@@ -5,19 +5,25 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.mehdiatique.core.navigation_contract.NotesNav
 import com.mehdiatique.feature.notes.presentation.NotesScreen
 import com.mehdiatique.feature.notes.presentation.details.NoteDetailScreen
 
 fun NavGraphBuilder.notesNavGraph(navController: NavController) {
     composable(route = NotesRoute.List.route) {
         NotesScreen(
-            navigateToDetail = { contactId -> navController.navigate(NotesRoute.Detail.navigateTo(contactId)) }
+            navigateToDetail = { noteId -> navController.navigate(NotesNav.detailRoute(noteId = noteId)) }
         )
     }
     composable(
         route = NotesRoute.Detail.route,
         arguments = listOf(
-            navArgument(NotesRoute.Detail.ARG_ID) {
+            navArgument(NotesNav.ARG_NOTE_ID) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            },
+            navArgument(NotesNav.ARG_CONTACT_ID) {
                 type = NavType.StringType
                 nullable = true
                 defaultValue = null
@@ -32,9 +38,5 @@ fun NavGraphBuilder.notesNavGraph(navController: NavController) {
 
 sealed class NotesRoute(val route: String) {
     object List : NotesRoute("notes")
-
-    object Detail : NotesRoute("note_detail?id={id}") {
-        const val ARG_ID = "id"
-        fun navigateTo(id: Long?) = if (id != null) "note_detail?$ARG_ID=$id" else "note_detail"
-    }
+    object Detail : NotesRoute(NotesNav.routePattern())
 }

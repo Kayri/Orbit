@@ -5,9 +5,9 @@ package com.mehdiatique.core.data.model
  */
 data class Note(
     val id: Long,
-    val content: String,
-    val title: String,
-    val createdAt: Long,
+    val content: String = "",
+    val title: String = "",
+    val createdAt: Long = 0,
     val updatedAt: Long? = null,
     val owner: Contact? = null,
     val task: Task? = null,

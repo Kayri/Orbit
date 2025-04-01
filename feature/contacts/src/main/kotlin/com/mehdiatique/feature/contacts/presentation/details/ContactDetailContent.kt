@@ -109,19 +109,26 @@ fun ContactDetailBody(
                 ContactInfoSection(it)
                 Spacer(Modifier.height(24.dp))
 
-                SectionHeader("Tasks", onAddClick = {
-                    onEvent(ContactDetailEvent.AddTask)
-                }, icon = Icons.Default.Add)
-                PlaceholderItem("Follow up next week")
-                PlaceholderItem("Send coffee machine proposal")
-
-                Spacer(Modifier.height(24.dp))
-
                 SectionHeader("Notes", onAddClick = {
                     onEvent(ContactDetailEvent.AddNote)
                 }, icon = Icons.Default.Add)
-                PlaceholderItem("Talked about coffee machine. Interested in demo.")
-                PlaceholderItem("Mentioned competitor pricing.")
+
+                contact.noteList
+                    ?.take(4)
+                    ?.forEach { note ->
+                        PlaceholderItem(
+                            title = note.title,
+                            content = note.content,
+                            onClick = { onEvent(ContactDetailEvent.OpenNote(note.id)) }
+                        )
+                    }
+
+                Spacer(Modifier.height(24.dp))
+
+                SectionHeader("Tasks", onAddClick = {
+                    onEvent(ContactDetailEvent.AddTask)
+                }, icon = Icons.Default.Add)
+
             }
         }
     }

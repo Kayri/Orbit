@@ -1,5 +1,6 @@
 package com.mehdiatique.feature.contacts.presentation.details
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mehdiatique.core.data.model.Contact
@@ -56,8 +58,8 @@ fun ContactDetailEditSection(
     )
     OutlinedTextField(
         value = contact?.description.orEmpty(),
-        onValueChange = { onEvent(ContactDetailEvent.NotesChanged(it)) },
-        label = { Text("Notes") },
+        onValueChange = { onEvent(ContactDetailEvent.DescriptionChanged(it)) },
+        label = { Text("Description") },
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
@@ -98,12 +100,21 @@ fun SectionHeader(title: String, onAddClick: () -> Unit, icon: androidx.compose.
  * Temporary placeholder for future task/note items.
  */
 @Composable
-fun PlaceholderItem(text: String) {
-    Text(
-        text = "• $text",
-        modifier = Modifier.padding(start = 8.dp, top = 4.dp),
-        style = MaterialTheme.typography.bodyMedium
-    )
+fun PlaceholderItem(title: String, content: String, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 8.dp)
+    ) {
+        Text(text = title, style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = content,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }
 
 @Preview(showBackground = true)

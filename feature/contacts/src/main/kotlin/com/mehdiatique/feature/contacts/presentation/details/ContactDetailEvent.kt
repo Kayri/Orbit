@@ -11,7 +11,7 @@ sealed class ContactDetailEvent {
     data class EmailChanged(val email: String) : ContactDetailEvent()
     data class PhoneChanged(val phone: String) : ContactDetailEvent()
     data class CompanyChanged(val company: String) : ContactDetailEvent()
-    data class NotesChanged(val notes: String) : ContactDetailEvent()
+    data class DescriptionChanged(val description: String) : ContactDetailEvent()
 
     object CloseEdit : ContactDetailEvent()
     object EditContact : ContactDetailEvent()

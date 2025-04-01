@@ -28,7 +28,7 @@ interface NoteDao {
     fun searchNotes(query: String): Flow<List<NoteWithRelations>>
 
     @Insert
-    suspend fun insertNote(note: NoteEntity)
+    suspend fun insertNote(note: NoteEntity): Long
 
     @Update
     suspend fun updateNote(note: NoteEntity)

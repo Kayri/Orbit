@@ -35,9 +35,8 @@ class NoteRepositoryImpl @Inject constructor(
             entities.map { it.toDomain() }
         }
 
-    override suspend fun addNote(note: Note) {
+    override suspend fun addNote(note: Note): Long =
         noteDao.insertNote(note = note.toEntity())
-    }
 
     override suspend fun updateNote(note: Note) {
         noteDao.updateNote(note = note.toEntity())

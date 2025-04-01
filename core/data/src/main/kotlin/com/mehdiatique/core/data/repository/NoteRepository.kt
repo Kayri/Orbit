@@ -11,7 +11,7 @@ interface NoteRepository {
     fun getNoteById(id: Long): Flow<Note>
     fun getNotesForContact(id: Long): Flow<List<Note>>
     fun searchNotes(query: String): Flow<List<Note>>
-    suspend fun addNote(note: Note)
+    suspend fun addNote(note: Note): Long
     suspend fun updateNote(note: Note)
     suspend fun deleteNoteById(id: Long)
 }

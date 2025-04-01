@@ -23,13 +23,13 @@ fun NoteDetailEditSection(
     OutlinedTextField(
         value = note?.title ?: "",
         onValueChange = { onEvent(NoteDetailEvent.TitleChanged(it)) },
-        label = { Text("Name") },
+        label = { Text("Title") },
         modifier = Modifier.fillMaxWidth()
     )
     OutlinedTextField(
         value = note?.content.orEmpty(),
         onValueChange = { onEvent(NoteDetailEvent.ContentChanged(it)) },
-        label = { Text("Email") },
+        label = { Text("Content") },
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
@@ -43,8 +43,9 @@ fun NoteDetailEditSection(
 @Composable
 fun NoteInfoSection(note: Note) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(note.title)
-        Text(note.content)
+        Text("title: " + note.title)
+        Text("content: " + note.content)
+        Text("OwnerName: " + note.owner?.name)
     }
 }
 

@@ -5,12 +5,12 @@ package com.mehdiatique.core.data.model
  */
 data class Contact(
     val id: Long,
-    val name: String,
+    val name: String = "",
     val email: String? = null,
     val phone: String? = null,
     val company: String? = null,
     val description: String? = null,
-    val createdAt: Long,
+    val createdAt: Long = 0,
     val noteList: List<Note>? = null,
     val taskList: List<Task>? = null
 )
