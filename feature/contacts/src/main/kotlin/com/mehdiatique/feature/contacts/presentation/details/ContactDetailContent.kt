@@ -1,12 +1,9 @@
 package com.mehdiatique.feature.contacts.presentation.details
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,12 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mehdiatique.core.data.model.Contact
+import com.mehdiatique.feature.contacts.presentation.details.components.EditSection
+import com.mehdiatique.feature.contacts.presentation.details.components.ViewSection
 
 /**
  * Main layout of the Contact Detail screen.
- *
- * Displays the top bar and delegates the content to [ContactDetailBody],
- * which adapts to the current [ContactDetailMode].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,55 +76,14 @@ fun ContactDetailContent(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
-        ContactDetailBody(
-            mode = mode,
-            contact = contact,
-            onEvent = onEvent,
-            modifier = Modifier
+        Column (modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
-        )
-    }
-}
-
-/**
- * Body content that switches between view and edit UI based on [ContactDetailMode].
- */
-@Composable
-fun ContactDetailBody(
-    mode: ContactDetailMode,
-    contact: Contact?,
-    onEvent: (ContactDetailEvent) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        if (mode.isEditable()) {
-            ContactDetailEditSection(contact = contact, onEvent = onEvent)
-        } else {
-            contact?.let {
-                ContactInfoSection(it)
-                Spacer(Modifier.height(24.dp))
-
-                SectionHeader("Notes", onAddClick = {
-                    onEvent(ContactDetailEvent.AddNote)
-                }, icon = Icons.Default.Add)
-
-                contact.noteList
-                    ?.take(4)
-                    ?.forEach { note ->
-                        PlaceholderItem(
-                            title = note.title,
-                            content = note.content,
-                            onClick = { onEvent(ContactDetailEvent.OpenNote(note.id)) }
-                        )
-                    }
-
-                Spacer(Modifier.height(24.dp))
-
-                SectionHeader("Tasks", onAddClick = {
-                    onEvent(ContactDetailEvent.AddTask)
-                }, icon = Icons.Default.Add)
-
+        ){
+            if (mode.isEditable()) {
+                EditSection(contact = contact, onEvent = onEvent)
+            } else {
+                ViewSection(contact = contact, onEvent = onEvent)
             }
         }
     }

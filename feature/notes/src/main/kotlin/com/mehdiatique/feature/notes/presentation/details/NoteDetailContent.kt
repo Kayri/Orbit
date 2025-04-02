@@ -20,12 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mehdiatique.core.data.model.Note
+import com.mehdiatique.feature.notes.presentation.details.components.EditSection
+import com.mehdiatique.feature.notes.presentation.details.components.ViewSection
 
 /**
  * Main layout of the Note Detail screen.
- *
- * Displays the top bar and delegates the content to [NoteDetailBody],
- * which adapts to the current [NoteDetailMode].
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,37 +76,22 @@ fun NoteDetailContent(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
-        NoteDetailBody(
-            mode = mode,
-            note = note,
-            onEvent = onEvent,
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
-        )
-    }
-}
-
-/**
- * Body content that switches between view and edit UI based on [NoteDetailMode].
- */
-@Composable
-fun NoteDetailBody(
-    mode: NoteDetailMode,
-    note: Note?,
-    onEvent: (NoteDetailEvent) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        if (mode.isEditable()) {
-            NoteDetailEditSection(note = note, onEvent = onEvent)
-        } else {
-            note?.let {
-                NoteInfoSection(note = it, onEvent = onEvent)
+        ) {
+            if (mode.isEditable()) {
+                EditSection(note = note, onEvent = onEvent)
+            } else {
+                note?.let {
+                    ViewSection(note = it, onEvent = onEvent)
+                }
             }
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

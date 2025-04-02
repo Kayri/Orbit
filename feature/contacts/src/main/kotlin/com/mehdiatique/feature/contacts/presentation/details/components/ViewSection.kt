@@ -1,15 +1,18 @@
-package com.mehdiatique.feature.contacts.presentation.details
+package com.mehdiatique.feature.contacts.presentation.details.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,53 +20,41 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mehdiatique.core.data.model.Contact
+import com.mehdiatique.feature.contacts.presentation.details.ContactDetailEvent
 
-/**
- * Editable fields for adding or updating a contact.
- */
 @Composable
-fun ContactDetailEditSection(
+fun ViewSection(
     contact: Contact?,
     onEvent: (ContactDetailEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    OutlinedTextField(
-        value = contact?.name ?: "",
-        onValueChange = { onEvent(ContactDetailEvent.NameChanged(it)) },
-        label = { Text("Name") },
-        modifier = Modifier.fillMaxWidth()
-    )
-    OutlinedTextField(
-        value = contact?.email.orEmpty(),
-        onValueChange = { onEvent(ContactDetailEvent.EmailChanged(it)) },
-        label = { Text("Email") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-    )
-    OutlinedTextField(
-        value = contact?.phone.orEmpty(),
-        onValueChange = { onEvent(ContactDetailEvent.PhoneChanged(it)) },
-        label = { Text("Phone") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-    )
-    OutlinedTextField(
-        value = contact?.company.orEmpty(),
-        onValueChange = { onEvent(ContactDetailEvent.CompanyChanged(it)) },
-        label = { Text("Company") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-    )
-    OutlinedTextField(
-        value = contact?.description.orEmpty(),
-        onValueChange = { onEvent(ContactDetailEvent.DescriptionChanged(it)) },
-        label = { Text("Description") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-    )
+    Column(modifier) {
+        contact?.let {
+            ContactInfoSection(it)
+            Spacer(Modifier.height(24.dp))
+
+            SectionHeader("Notes", onAddClick = {
+                onEvent(ContactDetailEvent.AddNote)
+            }, icon = Icons.Default.Add)
+
+            contact.noteList
+                ?.take(4)
+                ?.forEach { note ->
+                    PlaceholderItem(
+                        title = note.title,
+                        content = note.content,
+                        onClick = { onEvent(ContactDetailEvent.OpenNote(note.id)) }
+                    )
+                }
+
+            Spacer(Modifier.height(24.dp))
+
+            SectionHeader("Tasks", onAddClick = {
+                onEvent(ContactDetailEvent.AddTask)
+            }, icon = Icons.Default.Add)
+
+        }
+    }
 }
 
 /**
@@ -117,24 +108,7 @@ fun PlaceholderItem(title: String, content: String, onClick: () -> Unit) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ContactDetailEditSectionPreview() {
-    Column {
-        ContactDetailEditSection(
-            contact = Contact(
-                id = -1,
-                name = "Ada Lovelace",
-                email = "ada@code.com",
-                phone = "123456789",
-                company = "Engine Inc.",
-                description = "Note about Ada",
-                createdAt = 0
-            ),
-            onEvent = {}
-        )
-    }
-}
+
 
 @Preview(showBackground = true)
 @Composable
