@@ -54,8 +54,7 @@ fun NoteDetailScreen(
 
     with(sharedTransitionScope) {
         NoteDetailContent(
-            mode = state.mode,
-            note = state.note,
+            state = state,
             snackbarHostState = snackbarHostState,
             onEvent = viewModel::onEvent,
             onUiEvent = viewModel::onUiEvent,

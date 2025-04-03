@@ -1,5 +1,6 @@
 package com.mehdiatique.feature.notes.presentation.details
 
+import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.core.data.model.Note
 import com.mehdiatique.feature.notes.presentation.details.NoteDetailMode.ADD
 import com.mehdiatique.feature.notes.presentation.details.NoteDetailMode.EDIT
@@ -14,6 +15,7 @@ import com.mehdiatique.feature.notes.presentation.details.NoteDetailMode.VIEW
 data class NoteDetailState(
     val note: Note? = null,
     val mode: NoteDetailMode = ADD,
+    val contacts: List<Contact> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
