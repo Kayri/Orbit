@@ -29,8 +29,7 @@ import com.mehdiatique.feature.notes.presentation.details.components.ViewSection
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoteDetailContent(
-    mode: NoteDetailMode,
-    note: Note?,
+    state: NoteDetailState,
     snackbarHostState: SnackbarHostState,
     onEvent: (NoteDetailEvent) -> Unit,
     onUiEvent: (NoteDetailUiEvent) -> Unit,
@@ -42,16 +41,16 @@ fun NoteDetailContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = when (mode) {
+                        text = when (state.mode) {
                             NoteDetailMode.ADD -> "New Note"
                             NoteDetailMode.EDIT -> "Edit Note"
-                            NoteDetailMode.VIEW -> note?.title ?: "Note"
+                            NoteDetailMode.VIEW -> state.note?.title ?: "Note"
                         }
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (mode == NoteDetailMode.EDIT) onEvent(NoteDetailEvent.CloseEdit)
+                        if (state.mode == NoteDetailMode.EDIT) onEvent(NoteDetailEvent.CloseEdit)
                         else onUiEvent(NoteDetailUiEvent.CloseScreen)
 
                     }) {
@@ -59,10 +58,10 @@ fun NoteDetailContent(
                     }
                 },
                 actions = {
-                    if (mode.isEditable()) {
+                    if (state.mode.isEditable()) {
                         TextButton(
                             onClick = { onEvent(NoteDetailEvent.SaveNote) },
-                            enabled = note?.title?.isNotBlank() == true
+                            enabled = state.note?.title?.isNotBlank() == true
                         ) {
                             Text("Save")
                         }
@@ -81,10 +80,10 @@ fun NoteDetailContent(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
         ) {
-            if (mode.isEditable()) {
-                EditSection(note = note, onEvent = onEvent)
+            if (state.mode.isEditable()) {
+                EditSection(note = state.note, contacts = state.contacts, onEvent = onEvent)
             } else {
-                note?.let {
+                state.note?.let {
                     ViewSection(note = it, onEvent = onEvent)
                 }
             }
@@ -97,12 +96,14 @@ fun NoteDetailContent(
 @Composable
 fun NoteDetailContentPreview() {
     NoteDetailContent(
-        mode = NoteDetailMode.VIEW,
-        note = Note(
-            id = 1L,
-            title = "Title of the note",
-            content = "This is the content of the note. Bla bla bla...",
-            createdAt = 0,
+        state = NoteDetailState(
+            mode = NoteDetailMode.VIEW,
+            note = Note(
+                id = 1L,
+                title = "Title of the note",
+                content = "This is the content of the note. Bla bla bla...",
+                createdAt = 0,
+            )
         ),
         snackbarHostState = SnackbarHostState(),
         onEvent = {},

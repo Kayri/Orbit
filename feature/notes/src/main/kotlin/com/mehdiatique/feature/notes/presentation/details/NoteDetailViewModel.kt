@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.core.data.model.Note
+import com.mehdiatique.core.data.repository.ContactRepository
 import com.mehdiatique.core.data.repository.NoteRepository
 import com.mehdiatique.core.navigation_contract.NotesNav
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,6 +27,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class NoteDetailViewModel @Inject constructor(
+    private val contactRepository: ContactRepository,
     private val noteRepository: NoteRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -49,6 +51,11 @@ class NoteDetailViewModel @Inject constructor(
 
     init {
         noteId?.let { id -> loadNote(id) }
+        viewModelScope.launch {
+            contactRepository.getAllContacts().collect { contacts ->
+                _state.update { it.copy(contacts = contacts) }
+            }
+        }
     }
 
     /**
