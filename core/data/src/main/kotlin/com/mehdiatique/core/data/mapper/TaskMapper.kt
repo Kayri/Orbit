@@ -1,5 +1,6 @@
 package com.mehdiatique.core.data.mapper
 
+import com.mehdiatique.core.data.model.Priority
 import com.mehdiatique.core.data.model.Task
 import com.mehdiatique.core.database.entity.TaskEntity
 import com.mehdiatique.core.database.relationship.TaskWithRelations
@@ -10,10 +11,10 @@ import com.mehdiatique.core.database.relationship.TaskWithRelations
 fun TaskWithRelations.toDomain() = Task(
     id = task.taskId,
     title = task.title,
-    description = task.description,
+    content = task.content,
     isDone = task.isDone,
     dueAt = task.dueAt,
-    priority = task.priority,
+    priority = Priority.fromOrdinal(task.priority),
     completedAt = task.completedAt,
     createdAt = task.createdAt,
     updatedAt = task.updatedAt,
@@ -26,10 +27,10 @@ fun TaskWithRelations.toDomain() = Task(
  */
 fun TaskEntity.toDomain() = Task(
     id = taskId,
-    description = description,
+    content = content,
     dueAt = dueAt,
     isDone = isDone,
-    priority = priority,
+    priority = Priority.fromOrdinal(priority),
     title = title,
     completedAt = completedAt,
     createdAt = createdAt,
@@ -41,10 +42,10 @@ fun TaskEntity.toDomain() = Task(
  */
 fun Task.toEntity() = TaskEntity(
     taskId = id,
-    description = description,
+    content = content,
     dueAt = dueAt,
     isDone = isDone,
-    priority = priority,
+    priority = priority.ordinal,
     title = title,
     completedAt = completedAt,
     createdAt = createdAt,

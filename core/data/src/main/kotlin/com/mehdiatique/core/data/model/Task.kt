@@ -5,10 +5,10 @@ package com.mehdiatique.core.data.model
  */
 data class Task(
     val id: Long,
-    val title: String,
-    val description: String? = null,
-    val isDone: Boolean,
-    val priority: Int, // 0=none, 1=low, 2=med, 3=high (or use enum)
+    val title: String = "",
+    val content: String? = null,
+    val isDone: Boolean = false,
+    val priority: Priority = Priority.NONE,
     val dueAt: Long? = null, // Deadline or reminder date
     val completedAt: Long? = null, // Set when task is marked done
     val createdAt: Long,
