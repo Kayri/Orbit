@@ -13,8 +13,8 @@ import com.mehdiatique.feature.notes.presentation.details.NoteDetailMode.VIEW
  * loading status, and any error messages.
  */
 data class NoteDetailState(
-    val note: Note? = null,
-    val mode: NoteDetailMode = ADD,
+    val note: Note,
+    val mode: NoteDetailMode,
     val contacts: List<Contact> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null

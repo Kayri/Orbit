@@ -22,12 +22,14 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun <T> OwnerSelector(
+fun <T> DropdownSelector(
     items: List<T>,
     selected: T?,
     onSelected: (T?) -> Unit,
     itemLabel: (T) -> String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDropdownOpened: (() -> Unit)? = null,
+    label: @Composable (() -> Unit)? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
     val currentLabel = selected?.let { itemLabel(it) } ?: ""
@@ -35,7 +37,10 @@ fun <T> OwnerSelector(
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = it },
+        onExpandedChange = {
+            expanded = it
+            if (it) onDropdownOpened
+        },
         modifier = modifier
     ) {
         OutlinedTextField(
@@ -44,7 +49,7 @@ fun <T> OwnerSelector(
                 inputText = it
                 expanded = true
             },
-            label = { Text("Owner") },
+            label = label,
             trailingIcon = {
                 if (selected != null) {
                     Text(

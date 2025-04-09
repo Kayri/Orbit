@@ -13,6 +13,7 @@ sealed class NoteDetailEvent {
     object CloseEdit : NoteDetailEvent()
     object EditNote : NoteDetailEvent()
     object SaveNote : NoteDetailEvent()
+    object LoadAllContacts : NoteDetailEvent()
     data class OpenContact(val contactId: Long) : NoteDetailEvent()
 //    object AddTask : ContactDetailEvent()
 //    data class OpenTask(val taskId: Long) : ContactDetailEvent()
