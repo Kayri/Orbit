@@ -44,7 +44,7 @@ fun NoteDetailContent(
                         text = when (state.mode) {
                             NoteDetailMode.ADD -> "New Note"
                             NoteDetailMode.EDIT -> "Edit Note"
-                            NoteDetailMode.VIEW -> state.note?.title ?: "Note"
+                            NoteDetailMode.VIEW -> state.note.title
                         }
                     )
                 },
@@ -61,7 +61,7 @@ fun NoteDetailContent(
                     if (state.mode.isEditable()) {
                         TextButton(
                             onClick = { onEvent(NoteDetailEvent.SaveNote) },
-                            enabled = state.note?.title?.isNotBlank() == true
+                            enabled = state.note.title.isNotBlank() == true
                         ) {
                             Text("Save")
                         }
@@ -83,9 +83,7 @@ fun NoteDetailContent(
             if (state.mode.isEditable()) {
                 EditSection(note = state.note, contacts = state.contacts, onEvent = onEvent)
             } else {
-                state.note?.let {
-                    ViewSection(note = it, onEvent = onEvent)
-                }
+                ViewSection(note = state.note, onEvent = onEvent)
             }
         }
     }

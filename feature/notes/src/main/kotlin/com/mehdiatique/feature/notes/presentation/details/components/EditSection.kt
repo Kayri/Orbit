@@ -12,14 +12,14 @@ import androidx.compose.ui.unit.dp
 import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.core.data.model.Note
 import com.mehdiatique.feature.notes.presentation.details.NoteDetailEvent
-import com.mehdiatique.orbit.design.components.OwnerSelector
+import com.mehdiatique.orbit.design.components.DropdownSelector
 
 /**
  * Editable fields for adding or updating a note.
  */
 @Composable
 fun EditSection(
-    note: Note?,
+    note: Note,
     contacts: List<Contact>,
     onEvent: (NoteDetailEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -29,25 +29,27 @@ fun EditSection(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         OutlinedTextField(
-            value = note?.title ?: "",
+            value = note.title,
             onValueChange = { onEvent(NoteDetailEvent.TitleChanged(it)) },
             label = { Text("Title") },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = note?.content.orEmpty(),
+            value = note.content,
             onValueChange = { onEvent(NoteDetailEvent.ContentChanged(it)) },
             label = { Text("Content") },
             modifier = Modifier
                 .fillMaxWidth()
         )
-        OwnerSelector(
+        DropdownSelector(
             items = contacts,
-            selected = note?.owner,
+            selected = note.owner,
             onSelected = { contact ->
-                onEvent(NoteDetailEvent.ContactChanged(contact?.id))
+                onEvent(NoteDetailEvent.ContactChanged(contact))
             },
-            itemLabel = { it.name })
+            itemLabel = { it.name },
+            onDropdownOpened = { onEvent(NoteDetailEvent.LoadAllContacts) }
+        ) { Text("Owner") }
     }
 }
 

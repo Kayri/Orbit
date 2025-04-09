@@ -1,5 +1,7 @@
 package com.mehdiatique.feature.notes.presentation.details
 
+import com.mehdiatique.core.data.model.Contact
+
 /**
  * Represents user-driven actions and changes in the Note Detail screen.
  *
@@ -9,10 +11,11 @@ package com.mehdiatique.feature.notes.presentation.details
 sealed class NoteDetailEvent {
     data class ContentChanged(val content: String) : NoteDetailEvent()
     data class TitleChanged(val title: String) : NoteDetailEvent()
-    data class ContactChanged(val contactId: Long?) : NoteDetailEvent()
+    data class ContactChanged(val contact: Contact?) : NoteDetailEvent()
     object CloseEdit : NoteDetailEvent()
     object EditNote : NoteDetailEvent()
     object SaveNote : NoteDetailEvent()
+    object LoadAllContacts : NoteDetailEvent()
     data class OpenContact(val contactId: Long) : NoteDetailEvent()
 //    object AddTask : ContactDetailEvent()
 //    data class OpenTask(val taskId: Long) : ContactDetailEvent()
