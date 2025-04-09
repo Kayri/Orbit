@@ -6,11 +6,12 @@ import com.mehdiatique.feature.contacts.navigation.ContactsRoute
 import com.mehdiatique.feature.contacts.navigation.contactsNavGraph
 import com.mehdiatique.feature.notes.navigation.NotesRoute
 import com.mehdiatique.feature.notes.navigation.notesNavGraph
+import com.mehdiatique.feature.tasks.navigation.tasksNavGraph
 
 fun NavGraphBuilder.orbitNavGraph(navController: NavController) {
     contactsNavGraph(navController)
     notesNavGraph(navController)
-//    tasksNavGraph(navController)
+    tasksNavGraph(navController)
 }
 
 /**
