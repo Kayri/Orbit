@@ -29,15 +29,15 @@ fun NavGraphBuilder.tasksNavGraph(navController: NavController) {
             }
         ),
     ) {
-//        TaskDetailScreen(
-//            onClose = { navController.popBackStack() },
-//            onNavigateToContact = { contactId ->
-//                navController.navigate(ContactNav.detailRoute(contactId = contactId)) {
-//                    popUpTo(ContactNav.routePattern()) { inclusive = false }
-//                    launchSingleTop = true
-//                }
-//            }
-//        )
+        TaskDetailScreen(
+            onClose = { navController.popBackStack() },
+            onNavigateToContact = { contactId ->
+                navController.navigate(ContactNav.detailRoute(contactId = contactId)) {
+                    popUpTo(ContactNav.routePattern()) { inclusive = false }
+                    launchSingleTop = true
+                }
+            }
+        )
     }
 }
 
