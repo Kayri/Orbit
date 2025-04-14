@@ -60,7 +60,6 @@ class TaskDetailViewModel @Inject constructor(
 
     init {
         taskId?.let { id -> observeTaskDetails(id) }
-        loadAllContacts()
     }
 
     /**
@@ -132,9 +131,13 @@ class TaskDetailViewModel @Inject constructor(
 
     private fun loadAllContacts() {
         viewModelScope.launch {
-            contactRepository.getAllContacts().collect { contacts ->
-                _state.update { it.copy(contacts = contacts) }
-            }
+            contactRepository.getAllContacts()
+                .catch { e ->
+                    _state.update { it.copy(error = e.message ?: e.cause?.message ?: "Unknown error") }
+                }
+                .collect { contacts ->
+                    _state.update { it.copy(contacts = contacts) }
+                }
         }
     }
 
