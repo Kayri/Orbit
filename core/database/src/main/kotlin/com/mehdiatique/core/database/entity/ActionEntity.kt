@@ -6,7 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "notes",
+    tableName = "actions",
     foreignKeys = [
         ForeignKey(
             entity = ContactEntity::class,
@@ -17,11 +17,14 @@ import androidx.room.PrimaryKey
     ],
     indices = [Index("contactOwnerId")]
 )
-data class NoteEntity(
-    @PrimaryKey(autoGenerate = true) val noteId: Long = 0,
-    val content: String,
+data class ActionEntity(
+    @PrimaryKey(autoGenerate = true) val actionId: Long = 0,
+    val contactOwnerId: Long? = null,
     val title: String,
+    val isDone: Boolean = false,
+    val priority: Int = 0,
+    val dueAt: Long? = null,
+    val completedAt: Long? = null,
     val createdAt: Long = System.currentTimeMillis(),
-    val updatedAt: Long? = null,
-    val contactOwnerId: Long? = null // Optional link
+    val updatedAt: Long? = null
 )

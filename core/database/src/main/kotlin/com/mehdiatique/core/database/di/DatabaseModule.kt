@@ -37,14 +37,14 @@ object DatabaseModule {
     fun provideContactDao(database: OrbitDatabase) = database.contactDao()
 
     /**
-     * Provides the TaskDao instance from the OrbitDatabase.
+     * Provides the ActionDao instance from the OrbitDatabase.
      */
     @Provides
-    fun provideTaskDao(database: OrbitDatabase) = database.taskDao()
+    fun provideActionDao(database: OrbitDatabase) = database.actionDao()
 
     /**
-     * Provides the NoteDao instance from the OrbitDatabase.
+     * Provides the InsightDao instance from the OrbitDatabase.
      */
     @Provides
-    fun provideNoteDao(database: OrbitDatabase) = database.noteDao()
+    fun provideInsightDao(database: OrbitDatabase) = database.insightDao()
 }

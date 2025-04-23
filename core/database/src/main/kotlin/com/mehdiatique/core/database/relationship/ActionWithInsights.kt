@@ -6,18 +6,12 @@ import com.mehdiatique.core.database.entity.ContactEntity
 import com.mehdiatique.core.database.entity.InsightEntity
 import com.mehdiatique.core.database.entity.ActionEntity
 
-data class ContactWithRelations(
-    @Embedded val contact: ContactEntity,
+data class ActionWithInsights(
+    @Embedded val action: ActionEntity,
 
     @Relation(
-        parentColumn = "contactId",
-        entityColumn = "contactOwnerId"
-    )
-    val actions: List<ActionEntity> = emptyList(),
-
-    @Relation(
-        parentColumn = "contactId",
-        entityColumn = "contactOwnerId"
+        parentColumn = "actionId",
+        entityColumn = "actionOwnerId"
     )
     val insights: List<InsightEntity> = emptyList()
 )
