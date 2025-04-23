@@ -79,7 +79,8 @@ class TaskDetailViewModel @Inject constructor(
             is TaskDetailEvent.ErrorShown -> _state.update { it.copy(error = null) }
             is TaskDetailEvent.LoadAllContacts -> loadAllContacts()
             is TaskDetailEvent.OpenContact -> onUiEvent(TaskDetailUiEvent.NavigateToContact(event.contactId))
-
+            is TaskDetailEvent.AddNote -> onUiEvent(TaskDetailUiEvent.NavigateToAddNote)
+            is TaskDetailEvent.OpenNote -> onUiEvent(TaskDetailUiEvent.NavigateToNote(event.noteId))
         }
     }
 

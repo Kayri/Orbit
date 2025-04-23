@@ -10,6 +10,6 @@ sealed class TaskDetailUiEvent {
     object CloseScreen : TaskDetailUiEvent()
     object TaskSaved : TaskDetailUiEvent()
     data class NavigateToContact(val contactId: Long) : TaskDetailUiEvent()
-//    data class NavigateToAddNote(val taskId: Long) : TaskDetailUiEvent()
-//    data class NavigateToNote(val noteId: Long) : TaskDetailUiEvent()
+    object NavigateToAddNote : TaskDetailUiEvent()
+    data class NavigateToNote(val noteId: Long) : TaskDetailUiEvent()
 }

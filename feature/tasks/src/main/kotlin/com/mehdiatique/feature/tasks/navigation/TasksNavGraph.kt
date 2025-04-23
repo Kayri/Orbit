@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mehdiatique.core.navigation_contract.ContactNav
+import com.mehdiatique.core.navigation_contract.NotesNav
 import com.mehdiatique.core.navigation_contract.TasksNav
 import com.mehdiatique.feature.tasks.presentation.TasksScreen
 import com.mehdiatique.feature.tasks.presentation.details.TaskDetailScreen
@@ -33,6 +34,18 @@ fun NavGraphBuilder.tasksNavGraph(navController: NavController) {
             onClose = { navController.popBackStack() },
             onNavigateToContact = { contactId ->
                 navController.navigate(ContactNav.detailRoute(contactId = contactId)) {
+                    popUpTo(ContactNav.routePattern()) { inclusive = false }
+                    launchSingleTop = true
+                }
+            },
+            onNavigateToAddNote = {
+//                navController.navigate(NotesNav.detailRoute()){
+//                    popUpTo(ContactNav.routePattern()) { inclusive = false }
+//                    launchSingleTop = true
+//                }
+            },
+            onNavigateToNote = { noteId ->
+                navController.navigate(NotesNav.detailRoute(noteId = noteId)){
                     popUpTo(ContactNav.routePattern()) { inclusive = false }
                     launchSingleTop = true
                 }

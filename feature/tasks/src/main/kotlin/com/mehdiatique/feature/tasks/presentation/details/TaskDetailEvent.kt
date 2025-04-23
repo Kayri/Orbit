@@ -19,7 +19,7 @@ sealed class TaskDetailEvent {
     object SaveTask : TaskDetailEvent()
     object LoadAllContacts : TaskDetailEvent()
     data class OpenContact(val contactId: Long) : TaskDetailEvent()
-//    object AddNote : TaskDetailEvent()
-//    data class OpenNote(val taskId: Long) : TaskDetailEvent()
+    object AddNote : TaskDetailEvent()
+    data class OpenNote(val noteId: Long) : TaskDetailEvent()
     object ErrorShown : TaskDetailEvent()
 }

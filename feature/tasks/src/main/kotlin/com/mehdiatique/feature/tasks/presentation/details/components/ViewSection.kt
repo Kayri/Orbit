@@ -3,8 +3,13 @@ package com.mehdiatique.feature.tasks.presentation.details.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,20 +34,33 @@ fun ViewSection(
         Text("title: " + task.title)
         Text("content: " + task.content)
         task.owner?.let { contact ->
-            OwnerCard(name = contact.name, onClick = { onEvent(TaskDetailEvent.OpenContact(contact.id)) })
+            CustomCard(onClick = { onEvent(TaskDetailEvent.OpenContact(contact.id)) }) {
+                Text("Owner: ${contact.name}", modifier = Modifier.padding(8.dp))
+            }
+        }
+        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+            task.note?.let { note ->
+                CustomCard(onClick = { onEvent(TaskDetailEvent.OpenNote(noteId = note.id)) }) {
+                    Text("Note: ${note.title}", modifier = Modifier.padding(8.dp))
+                }
+            }
+            IconButton(onClick = { onEvent(TaskDetailEvent.AddNote) }) {
+                Icon(Icons.Default.Add, contentDescription = "Add note")
+            }
         }
     }
 }
 
 
 @Composable
-fun OwnerCard(name: String, onClick: () -> Unit) {
+fun CustomCard(
+    onClick: () -> Unit,
+    label: @Composable (() -> Unit)? = null
+) {
     Card(
         modifier = Modifier
             .clickable { onClick() }
-    ) {
-        Text("Owner: $name", modifier = Modifier.padding(8.dp))
-    }
+    ) { label }
 }
 
 @Preview(showBackground = true)

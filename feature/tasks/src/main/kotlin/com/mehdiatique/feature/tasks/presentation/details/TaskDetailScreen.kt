@@ -21,8 +21,8 @@ fun TaskDetailScreen(
     viewModel: TaskDetailViewModel = hiltViewModel(),
     onClose: () -> Unit,
     onNavigateToContact: (Long) -> Unit,
-//    onNavigateToAddNote: (Long) -> Unit,
-//    onNavigateToNote: (Long) -> Unit
+    onNavigateToAddNote: () -> Unit,
+    onNavigateToNote: (Long) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -45,8 +45,8 @@ fun TaskDetailScreen(
                 is TaskDetailUiEvent.TaskSaved -> viewModel.onEvent(TaskDetailEvent.CloseEdit)
                 is TaskDetailUiEvent.CloseScreen -> onClose()
                 is TaskDetailUiEvent.NavigateToContact -> onNavigateToContact(event.contactId)
-//                is ContactDetailUiEvent.NavigateToAddNote -> onNavigateToAddNote()
-//                is ContactDetailUiEvent.NavigateToNote -> onNavigateToNote()
+                is TaskDetailUiEvent.NavigateToAddNote -> onNavigateToAddNote()
+                is TaskDetailUiEvent.NavigateToNote -> onNavigateToNote(event.noteId)
             }
         }
     }
