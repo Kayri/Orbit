@@ -15,8 +15,8 @@ fun ContactWithRelations.toDomain() = Contact(
     company = contact.company,
     description = contact.description,
     createdAt = contact.createdAt,
-    noteList = notes.map { it.toDomain()},
-    taskList = tasks.map { it.toDomain() }
+    insights = insights.map { it.toDomain() },
+    actions = actions.map { it.toDomain() }
 )
 
 /**
