@@ -17,20 +17,32 @@ import javax.inject.Singleton
 class TaskRepositoryImpl @Inject constructor(
     private val taskDao: TaskDao
 ) : TaskRepository {
+    override fun getAllTasks(): Flow<List<Task>> =
+        taskDao.getAllTasks().map { entities ->
+            entities.map { it.toDomain() }
+        }
+
+    override fun getTaskById(id: Long): Flow<Task> =
+        taskDao.getTaskById(id = id).map { it.toDomain() }
+
     override fun getTasksForContact(id: Long): Flow<List<Task>> =
         taskDao.getTasksForContact(contactId = id).map { entities ->
             entities.map { it.toDomain() }
         }
 
-    override suspend fun addTask(task: Task) {
+    override fun searchTasks(query: String): Flow<List<Task>> =
+        taskDao.searchTasks(query = query).map { entities ->
+            entities.map { it.toDomain() }
+        }
+
+    override suspend fun addTask(task: Task): Long =
         taskDao.insertTask(task = task.toEntity())
-    }
 
     override suspend fun updateTask(task: Task) {
         taskDao.updateTask(task = task.toEntity())
     }
 
-    override suspend fun deleteTask(task: Task) {
-        taskDao.deleteTask(task = task.toEntity())
+    override suspend fun deleteTaskById(id: Long) {
+        taskDao.deleteTaskById(id = id)
     }
 }

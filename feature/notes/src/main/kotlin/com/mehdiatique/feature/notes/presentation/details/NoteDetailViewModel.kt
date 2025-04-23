@@ -69,7 +69,7 @@ class NoteDetailViewModel @Inject constructor(
         when (event) {
             is NoteDetailEvent.ContentChanged -> updateNote { it.copy(content = event.content) }
             is NoteDetailEvent.TitleChanged -> updateNote { it.copy(title = event.title) }
-            is NoteDetailEvent.ContactChanged -> event.contactId?.let { id -> updateNote { it.copy(owner = Contact(id = id)) } }
+            is NoteDetailEvent.ContactChanged -> event.contact?.let { contact -> updateNote { it.copy(owner = contact) } }
             is NoteDetailEvent.CloseEdit -> _state.update { it.copy(mode = NoteDetailMode.VIEW) }
             is NoteDetailEvent.EditNote -> _state.update { it.copy(mode = NoteDetailMode.EDIT) }
             is NoteDetailEvent.SaveNote -> saveNote()
@@ -130,12 +130,14 @@ class NoteDetailViewModel @Inject constructor(
         }
 
     private fun loadAllContacts() {
-        if (_state.value.contacts.isEmpty()) {
-            viewModelScope.launch {
-                contactRepository.getAllContacts().collect { contacts ->
+        viewModelScope.launch {
+            contactRepository.getAllContacts()
+                .catch { e ->
+                    _state.update { it.copy(error = e.message ?: e.cause?.message ?: "Unknown error") }
+                }
+                .collect { contacts ->
                     _state.update { it.copy(contacts = contacts) }
                 }
-            }
         }
     }
 
@@ -152,8 +154,7 @@ class NoteDetailViewModel @Inject constructor(
             try {
                 if (note.id == TEMP_ID) {
                     val newId = noteRepository.addNote(note)
-                    // Reload to fetch Owner Name
-                    observeNoteDetails(newId)
+                    updateNote { it.copy(id = newId) }
                 } else {
                     noteRepository.updateNote(note)
                 }

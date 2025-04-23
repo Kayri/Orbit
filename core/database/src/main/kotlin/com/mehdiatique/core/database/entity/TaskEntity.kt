@@ -26,7 +26,7 @@ import androidx.room.PrimaryKey
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true) val taskId: Long = 0,
     val title: String,
-    val description: String? = null,
+    val content: String? = null,
     val isDone: Boolean = false,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long? = null,

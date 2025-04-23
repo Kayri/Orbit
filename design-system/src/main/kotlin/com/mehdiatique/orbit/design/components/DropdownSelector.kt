@@ -39,7 +39,7 @@ fun <T> DropdownSelector(
         expanded = expanded,
         onExpandedChange = {
             expanded = it
-            if (it) onDropdownOpened
+            if (it) onDropdownOpened?.invoke()
         },
         modifier = modifier
     ) {
