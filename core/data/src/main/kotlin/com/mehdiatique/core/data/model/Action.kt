@@ -1,6 +1,5 @@
 package com.mehdiatique.core.data.model
 
-
 /**
  * Domain model representing an action (task/to-do).
  */

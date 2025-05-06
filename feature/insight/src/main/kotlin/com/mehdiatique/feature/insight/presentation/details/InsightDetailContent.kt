@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.notes.presentation.details
+package com.mehdiatique.feature.insight.presentation.details
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,20 +19,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mehdiatique.core.data.model.Note
-import com.mehdiatique.feature.notes.presentation.details.components.EditSection
-import com.mehdiatique.feature.notes.presentation.details.components.ViewSection
+import com.mehdiatique.core.data.model.Insight
+import com.mehdiatique.feature.insight.presentation.details.components.EditSection
+import com.mehdiatique.feature.insight.presentation.details.components.ViewSection
 
 /**
- * Main layout of the Note Detail screen.
+ * Main layout of the Insight Detail screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteDetailContent(
-    state: NoteDetailState,
+fun InsightDetailContent(
+    state: InsightDetailState,
     snackbarHostState: SnackbarHostState,
-    onEvent: (NoteDetailEvent) -> Unit,
-    onUiEvent: (NoteDetailUiEvent) -> Unit,
+    onEvent: (InsightDetailEvent) -> Unit,
+    onUiEvent: (InsightDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -42,16 +42,16 @@ fun NoteDetailContent(
                 title = {
                     Text(
                         text = when (state.mode) {
-                            NoteDetailMode.ADD -> "New Note"
-                            NoteDetailMode.EDIT -> "Edit Note"
-                            NoteDetailMode.VIEW -> state.note.title
+                            InsightDetailMode.ADD -> "New Insight"
+                            InsightDetailMode.EDIT -> "Edit Insight"
+                            InsightDetailMode.VIEW -> "View Insight"
                         }
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (state.mode == NoteDetailMode.EDIT) onEvent(NoteDetailEvent.CloseEdit)
-                        else onUiEvent(NoteDetailUiEvent.CloseScreen)
+                        if (state.mode == InsightDetailMode.EDIT) onEvent(InsightDetailEvent.CloseEdit)
+                        else onUiEvent(InsightDetailUiEvent.CloseScreen)
 
                     }) {
                         Icon(Icons.Default.Close, contentDescription = "Close")
@@ -60,13 +60,13 @@ fun NoteDetailContent(
                 actions = {
                     if (state.mode.isEditable()) {
                         TextButton(
-                            onClick = { onEvent(NoteDetailEvent.SaveNote) },
-                            enabled = state.note.title.isNotBlank() == true
+                            onClick = { onEvent(InsightDetailEvent.SaveInsight) },
+                            enabled = state.insight.content.isNotBlank() == true
                         ) {
                             Text("Save")
                         }
                     } else {
-                        IconButton(onClick = { onEvent(NoteDetailEvent.EditNote) }) {
+                        IconButton(onClick = { onEvent(InsightDetailEvent.EditInsight) }) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
                     }
@@ -81,9 +81,9 @@ fun NoteDetailContent(
                 .padding(horizontal = 16.dp)
         ) {
             if (state.mode.isEditable()) {
-                EditSection(note = state.note, contacts = state.contacts, onEvent = onEvent)
+                EditSection(insight = state.insight, contacts = state.contacts, onEvent = onEvent)
             } else {
-                ViewSection(note = state.note, onEvent = onEvent)
+                ViewSection(insight = state.insight, onEvent = onEvent)
             }
         }
     }
@@ -92,14 +92,13 @@ fun NoteDetailContent(
 
 @Preview(showBackground = true)
 @Composable
-fun NoteDetailContentPreview() {
-    NoteDetailContent(
-        state = NoteDetailState(
-            mode = NoteDetailMode.VIEW,
-            note = Note(
+fun InsightDetailContentPreview() {
+    InsightDetailContent(
+        state = InsightDetailState(
+            mode = InsightDetailMode.VIEW,
+            insight = Insight(
                 id = 1L,
-                title = "Title of the note",
-                content = "This is the content of the note. Bla bla bla...",
+                content = "This is the content of the insight. Bla bla bla...",
                 createdAt = 0,
             )
         ),

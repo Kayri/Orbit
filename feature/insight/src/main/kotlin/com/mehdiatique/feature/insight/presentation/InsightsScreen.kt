@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.notes.presentation
+package com.mehdiatique.feature.insight.presentation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.ResizeMode
@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mehdiatique.core.data.model.Note
+import com.mehdiatique.core.data.model.Insight
 import com.mehdiatique.orbit.design.components.AnimatedFab
 import com.mehdiatique.orbit.design.components.SearchBar
 import com.mehdiatique.orbit.design.theme.OrbitTheme
@@ -38,50 +38,50 @@ import com.mehdiatique.orbit.design.transition.LocalAnimatedVisibilityScope
 import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
 
 /**
- * The main screen for displaying and managing notes.
+ * The main screen for displaying and managing insights.
  *
  * Connects to the ViewModel, handles UI state and events,
- * and delegates rendering to [NotesScreenContent].
+ * and delegates rendering to [InsightsScreenContent].
  *
  * @param viewModel The ViewModel providing UI state and events.
- * @param navigateToDetail Called when the user requests to view or edit a note.
+ * @param navigateToDetail Called when the user requests to view or edit a insight.
  */
 @Composable
-fun NotesScreen(
-    viewModel: NotesViewModel = hiltViewModel(),
+fun InsightsScreen(
+    viewModel: InsightsViewModel = hiltViewModel(),
     navigateToDetail: (Long?) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val state: NotesState by viewModel.state.collectAsStateWithLifecycle()
+    val state: InsightsState by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.error) {
         state.error?.let { errorMsg ->
             snackbarHostState.showSnackbar(message = errorMsg)
-            viewModel.onEvent(NotesEvent.ErrorShown)
+            viewModel.onEvent(InsightsEvent.ErrorShown)
         }
     }
 
-    NotesScreenContent(
+    InsightsScreenContent(
         state = state,
         snackbarHostState = snackbarHostState,
-        onSearchQueryChange = { viewModel.onEvent(NotesEvent.SearchQueryChanged(it)) },
+        onSearchQueryChange = { viewModel.onEvent(InsightsEvent.SearchQueryChanged(it)) },
         navigateToDetail = navigateToDetail,
     )
 }
 
 /**
- * Displays the notes UI including search, list, and actions.
+ * Displays the insights UI including search, list, and actions.
  *
  * Stateless and preview-friendly version of the screen.
  *
  * @param state The UI state to render.
  * @param snackbarHostState Snackbar host for transient messages.
  * @param onSearchQueryChange Called when the search query changes.
- * @param navigateToDetail Called when a note is selected or a new one is added.
+ * @param navigateToDetail Called when a insight is selected or a new one is added.
  */
 @Composable
-fun NotesScreenContent(
-    state: NotesState,
+fun InsightsScreenContent(
+    state: InsightsState,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onSearchQueryChange: (String) -> Unit = {},
     navigateToDetail: (Long?) -> Unit = {},
@@ -92,12 +92,12 @@ fun NotesScreenContent(
             SearchBar(
                 query = state.searchQuery,
                 onQueryChange = onSearchQueryChange,
-                placeholder = "Search Notes"
+                placeholder = "Search Insights"
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
-            AnimatedFab(contentDescription = "Add Notes") { navigateToDetail(null) }
+            AnimatedFab(contentDescription = "Add Insights") { navigateToDetail(null) }
         }
     ) { innerPadding ->
         LazyColumn(
@@ -106,22 +106,22 @@ fun NotesScreenContent(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            items(items = state.notes) { note ->
-                NoteItem(note = note, onClick = { navigateToDetail(note.id) })
+            items(items = state.insights) { insight ->
+                InsightItem(insight = insight, onClick = { navigateToDetail(insight.id) })
             }
         }
     }
 }
 
 /**
- * Displays a single note entry with their title and content.
+ * Displays a single insight entry with their title and content.
  *
- * @param note The note data to display.
+ * @param insight The insight data to display.
  * @param onClick Callback triggered when the item is tapped.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun NoteItem(note: Note, onClick: () -> Unit) {
+fun InsightItem(insight: Insight, onClick: () -> Unit) {
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
 
@@ -131,7 +131,7 @@ fun NoteItem(note: Note, onClick: () -> Unit) {
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .sharedBounds(
-                    sharedContentState = rememberSharedContentState(key = "note-${note.id}"),
+                    sharedContentState = rememberSharedContentState(key = "insight-${insight.id}"),
                     animatedVisibilityScope = animatedVisibilityScope,
                     enter = fadeIn(),
                     exit = fadeOut(),
@@ -144,8 +144,7 @@ fun NoteItem(note: Note, onClick: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = note.title, style = MaterialTheme.typography.titleMedium)
-                    Text(text = note.content, style = MaterialTheme.typography.bodyMedium)
+                    Text(text = insight.content, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
@@ -154,12 +153,12 @@ fun NoteItem(note: Note, onClick: () -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun NotesScreenPreview() {
+fun InsightsScreenPreview() {
     OrbitTheme {
-        val note = Note(id = 1, content = "Content of a note", title = "Note Title", createdAt = 0)
-        NotesScreenContent(
-            state = NotesState(
-                notes = listOf(note, note, note),
+        val insight = Insight(id = 1, content = "Content of a insight", createdAt = 0)
+        InsightsScreenContent(
+            state = InsightsState(
+                insights = listOf(insight, insight, insight),
             )
         )
     }

@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.notes.presentation.details.components
+package com.mehdiatique.feature.insight.presentation.details.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,26 +10,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mehdiatique.core.data.model.Note
-import com.mehdiatique.feature.notes.presentation.details.NoteDetailEvent
+import com.mehdiatique.core.data.model.Insight
+import com.mehdiatique.feature.insight.presentation.details.InsightDetailEvent
 
 /**
- * Read-only section that displays the note's information.
+ * Read-only section that displays the insight's information.
  */
 @Composable
 fun ViewSection(
-    note: Note,
-    onEvent: (NoteDetailEvent) -> Unit,
+    insight: Insight,
+    onEvent: (InsightDetailEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text("title: " + note.title)
-        Text("content: " + note.content)
-        note.owner?.let { contact ->
-            OwnerCard(name = contact.name, onClick = { onEvent(NoteDetailEvent.OpenContact(contact.id)) })
+        Text("content: " + insight.content)
+        insight.owner?.let { contact ->
+            OwnerCard(name = contact.name, onClick = { onEvent(InsightDetailEvent.OpenContact(contact.id)) })
         }
     }
 }
@@ -49,10 +48,9 @@ fun OwnerCard(name: String, onClick: () -> Unit) {
 @Composable
 fun ViewSectionPreview() {
     ViewSection(
-        note = Note(
+        insight = Insight(
             id = -1,
-            content = "Content of the note",
-            title = "Note Title",
+            content = "Content of the insight",
             createdAt = 0,
         ),
         onEvent = {}

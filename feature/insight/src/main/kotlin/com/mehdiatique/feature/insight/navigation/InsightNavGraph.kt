@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.notes.navigation
+package com.mehdiatique.feature.insight.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -6,30 +6,30 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mehdiatique.core.navigation_contract.ContactNav
-import com.mehdiatique.core.navigation_contract.NotesNav
-import com.mehdiatique.feature.notes.presentation.NotesScreen
-import com.mehdiatique.feature.notes.presentation.details.NoteDetailScreen
+import com.mehdiatique.core.navigation_contract.InsightNav
+import com.mehdiatique.feature.insight.presentation.InsightsScreen
+import com.mehdiatique.feature.insight.presentation.details.InsightDetailScreen
 
-fun NavGraphBuilder.notesNavGraph(navController: NavController) {
-    composable(route = NotesRoute.List.route) {
-        NotesScreen(navigateToDetail = { noteId -> navController.navigate(NotesNav.detailRoute(noteId = noteId)) })
+fun NavGraphBuilder.insightNavGraph(navController: NavController) {
+    composable(route = InsightRoute.List.route) {
+        InsightsScreen(navigateToDetail = { insightId -> navController.navigate(InsightNav.detailRoute(insightId = insightId)) })
     }
     composable(
-        route = NotesRoute.Detail.route,
+        route = InsightRoute.Detail.route,
         arguments = listOf(
-            navArgument(NotesNav.ARG_NOTE_ID) {
+            navArgument(InsightNav.ARG_INSIGHT_ID) {
                 type = NavType.StringType
                 nullable = true
                 defaultValue = null
             },
-            navArgument(NotesNav.ARG_CONTACT_ID) {
+            navArgument(InsightNav.ARG_CONTACT_ID) {
                 type = NavType.StringType
                 nullable = true
                 defaultValue = null
             }
         ),
     ) {
-        NoteDetailScreen(
+        InsightDetailScreen(
             onClose = { navController.popBackStack() },
             onNavigateToContact = { contactId ->
                 navController.navigate(ContactNav.detailRoute(contactId = contactId)) {
@@ -41,7 +41,7 @@ fun NavGraphBuilder.notesNavGraph(navController: NavController) {
     }
 }
 
-sealed class NotesRoute(val route: String) {
-    object List : NotesRoute("notes")
-    object Detail : NotesRoute(NotesNav.routePattern())
+sealed class InsightRoute(val route: String) {
+    object List : InsightRoute("insights")
+    object Detail : InsightRoute(InsightNav.routePattern())
 }

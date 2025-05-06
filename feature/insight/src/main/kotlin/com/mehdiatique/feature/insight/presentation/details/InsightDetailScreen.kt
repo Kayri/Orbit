@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.notes.presentation.details
+package com.mehdiatique.feature.insight.presentation.details
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.ResizeMode
@@ -18,12 +18,10 @@ import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun NoteDetailScreen(
-    viewModel: NoteDetailViewModel = hiltViewModel(),
+fun InsightDetailScreen(
+    viewModel: InsightDetailViewModel = hiltViewModel(),
     onClose: () -> Unit,
-    onNavigateToContact: (Long) -> Unit,
-//    onNavigateToAddTask: (Long) -> Unit,
-//    onNavigateToTask: (Long) -> Unit
+    onNavigateToContact: (Long) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -31,29 +29,27 @@ fun NoteDetailScreen(
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
 
-    val sharedKey = state.note?.id?.let { "note-$it" } ?: "fab"
+    val sharedKey = state.insight.id.let { "insight-$it" }
 
     LaunchedEffect(state.error) {
         state.error?.let { errorMsg ->
             snackbarHostState.showSnackbar(message = errorMsg)
-            viewModel.onEvent(NoteDetailEvent.ErrorShown)
+            viewModel.onEvent(InsightDetailEvent.ErrorShown)
         }
     }
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                is NoteDetailUiEvent.NoteSaved -> viewModel.onEvent(NoteDetailEvent.CloseEdit)
-                is NoteDetailUiEvent.CloseScreen -> onClose()
-                is NoteDetailUiEvent.NavigateToContact -> onNavigateToContact(event.contactId)
-//                is ContactDetailUiEvent.NavigateToAddTask -> onNavigateToAddTask(event.contactId)
-//                is ContactDetailUiEvent.NavigateToTask -> onNavigateToTask(event.taskId)
+                is InsightDetailUiEvent.InsightSaved -> viewModel.onEvent(InsightDetailEvent.CloseEdit)
+                is InsightDetailUiEvent.CloseScreen -> onClose()
+                is InsightDetailUiEvent.NavigateToContact -> onNavigateToContact(event.contactId)
             }
         }
     }
 
     with(sharedTransitionScope) {
-        NoteDetailContent(
+        InsightDetailContent(
             state = state,
             snackbarHostState = snackbarHostState,
             onEvent = viewModel::onEvent,

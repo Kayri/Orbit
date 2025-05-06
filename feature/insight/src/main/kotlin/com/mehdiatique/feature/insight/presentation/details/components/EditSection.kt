@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.notes.presentation.details.components
+package com.mehdiatique.feature.insight.presentation.details.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,18 +10,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mehdiatique.core.data.model.Contact
-import com.mehdiatique.core.data.model.Note
-import com.mehdiatique.feature.notes.presentation.details.NoteDetailEvent
+import com.mehdiatique.core.data.model.Insight
+import com.mehdiatique.feature.insight.presentation.details.InsightDetailEvent
 import com.mehdiatique.orbit.design.components.DropdownSelector
 
 /**
- * Editable fields for adding or updating a note.
+ * Editable fields for adding or updating a insight.
  */
 @Composable
 fun EditSection(
-    note: Note,
+    insight: Insight,
     contacts: List<Contact>,
-    onEvent: (NoteDetailEvent) -> Unit,
+    onEvent: (InsightDetailEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -29,26 +29,20 @@ fun EditSection(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         OutlinedTextField(
-            value = note.title,
-            onValueChange = { onEvent(NoteDetailEvent.TitleChanged(it)) },
-            label = { Text("Title") },
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = note.content,
-            onValueChange = { onEvent(NoteDetailEvent.ContentChanged(it)) },
+            value = insight.content,
+            onValueChange = { onEvent(InsightDetailEvent.ContentChanged(it)) },
             label = { Text("Content") },
             modifier = Modifier
                 .fillMaxWidth()
         )
         DropdownSelector(
             items = contacts,
-            selected = note.owner,
+            selected = insight.owner,
             onSelected = { contact ->
-                onEvent(NoteDetailEvent.ContactChanged(contact))
+                onEvent(InsightDetailEvent.ContactChanged(contact))
             },
             itemLabel = { it.name },
-            onDropdownOpened = { onEvent(NoteDetailEvent.LoadAllContacts) }
+            onDropdownOpened = { onEvent(InsightDetailEvent.LoadAllContacts) }
         ) { Text("Owner") }
     }
 }
@@ -58,10 +52,9 @@ fun EditSection(
 fun EditSectionPreview() {
     Column {
         EditSection(
-            note = Note(
+            insight = Insight(
                 id = -1,
                 content = "Ada Lovelace",
-                title = "ada@code.com",
                 createdAt = 0,
             ),
             contacts = emptyList<Contact>(),

@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mehdiatique.feature.notes"
+    namespace = "com.mehdiatique.feature.insight"
 }
 
 dependencies {

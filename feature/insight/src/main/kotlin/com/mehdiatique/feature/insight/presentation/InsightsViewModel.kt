@@ -1,8 +1,8 @@
-package com.mehdiatique.feature.notes.presentation
+package com.mehdiatique.feature.insight.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mehdiatique.core.data.repository.NoteRepository
+import com.mehdiatique.core.data.repository.InsightRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,25 +15,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel responsible for managing note data, search filtering, and UI state
- * for the Notes feature. It observes the note list from the repository and
+ * ViewModel responsible for managing insight data, search filtering, and UI state
+ * for the Insights feature. It observes the insight list from the repository and
  * exposes a filtered version based on the current search query.
  *
  * This ViewModel follows an MVI-inspired pattern using:
- * - [NotesState] as the single source of truth for UI state.
- * - [NotesEvent] to handle user actions like search input.
+ * - [InsightsState] as the single source of truth for UI state.
+ * - [InsightsEvent] to handle user actions like search input.
  */
 @HiltViewModel
-class NotesViewModel @Inject constructor(
-    private val noteRepository: NoteRepository
+class InsightsViewModel @Inject constructor(
+    private val insightRepository: InsightRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(NotesState(isLoading = true))
-    val state: StateFlow<NotesState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(InsightsState(isLoading = true))
+    val state: StateFlow<InsightsState> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            noteRepository.getAllNotes()
+            insightRepository.getAllInsights()
                 .onStart { _state.update { it.copy(isLoading = true) } }
                 .catch { e ->
                     _state.update {
@@ -43,22 +43,22 @@ class NotesViewModel @Inject constructor(
                         )
                     }
                 }
-                .collect { notes ->
-                    _state.update { current -> current.copy(notes = notes, isLoading = false) }
+                .collect { insights ->
+                    _state.update { current -> current.copy(insights = insights, isLoading = false) }
                 }
         }
     }
 
     /**
-     * Searches for notes matching the given query and updates the UI state.
+     * Searches for insights matching the given query and updates the UI state.
      * Cancels any ongoing search to keep results up to date.
      *
      * @param query The search text entered by the user.
      */
-    private fun searchNotes(query: String) {
+    private fun searchInsights(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            noteRepository.searchNotes(query)
+            insightRepository.searchInsights(query)
                 .onStart { _state.update { it.copy(isLoading = true) } }
                 .catch { e ->
                     _state.update {
@@ -68,8 +68,8 @@ class NotesViewModel @Inject constructor(
                         )
                     }
                 }
-                .collect { notes ->
-                    _state.update { current -> current.copy(notes = notes, isLoading = false) }
+                .collect { insights ->
+                    _state.update { current -> current.copy(insights = insights, isLoading = false) }
                 }
         }
     }
@@ -81,14 +81,14 @@ class NotesViewModel @Inject constructor(
      *
      * @param event The event triggered by user interaction.
      */
-    fun onEvent(event: NotesEvent) {
+    fun onEvent(event: InsightsEvent) {
         when (event) {
-            is NotesEvent.SearchQueryChanged -> {
+            is InsightsEvent.SearchQueryChanged -> {
                 _state.update { current -> current.copy(searchQuery = event.query) }
-                searchNotes(event.query)
+                searchInsights(event.query)
             }
 
-            is NotesEvent.ErrorShown -> {
+            is InsightsEvent.ErrorShown -> {
                 _state.update { it.copy(error = null) }
             }
         }
