@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.tasks.presentation.details
+package com.mehdiatique.feature.action.presentation.details
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,20 +19,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mehdiatique.core.data.model.Task
-import com.mehdiatique.feature.tasks.presentation.details.components.EditSection
-import com.mehdiatique.feature.tasks.presentation.details.components.ViewSection
+import com.mehdiatique.core.data.model.Action
+import com.mehdiatique.feature.action.presentation.details.components.EditSection
+import com.mehdiatique.feature.action.presentation.details.components.ViewSection
 
 /**
- * Main layout of the Task Detail screen.
+ * Main layout of the Action Detail screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskDetailContent(
-    state: TaskDetailState,
+fun ActionDetailContent(
+    state: ActionDetailState,
     snackbarHostState: SnackbarHostState,
-    onEvent: (TaskDetailEvent) -> Unit,
-    onUiEvent: (TaskDetailUiEvent) -> Unit,
+    onEvent: (ActionDetailEvent) -> Unit,
+    onUiEvent: (ActionDetailUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -42,16 +42,16 @@ fun TaskDetailContent(
                 title = {
                     Text(
                         text = when (state.mode) {
-                            TaskDetailMode.ADD -> "New Task"
-                            TaskDetailMode.EDIT -> "Edit Task"
-                            TaskDetailMode.VIEW -> state.task.title
+                            ActionDetailMode.ADD -> "New Action"
+                            ActionDetailMode.EDIT -> "Edit Action"
+                            ActionDetailMode.VIEW -> state.action.title
                         }
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (state.mode == TaskDetailMode.EDIT) onEvent(TaskDetailEvent.CloseEdit)
-                        else onUiEvent(TaskDetailUiEvent.CloseScreen)
+                        if (state.mode == ActionDetailMode.EDIT) onEvent(ActionDetailEvent.CloseEdit)
+                        else onUiEvent(ActionDetailUiEvent.CloseScreen)
 
                     }) {
                         Icon(Icons.Default.Close, contentDescription = "Close")
@@ -60,13 +60,13 @@ fun TaskDetailContent(
                 actions = {
                     if (state.mode.isEditable()) {
                         TextButton(
-                            onClick = { onEvent(TaskDetailEvent.SaveTask) },
-                            enabled = state.task.title.isNotBlank() == true
+                            onClick = { onEvent(ActionDetailEvent.SaveAction) },
+                            enabled = state.action.title.isNotBlank() == true
                         ) {
                             Text("Save")
                         }
                     } else {
-                        IconButton(onClick = { onEvent(TaskDetailEvent.EditTask) }) {
+                        IconButton(onClick = { onEvent(ActionDetailEvent.EditAction) }) {
                             Icon(Icons.Default.Edit, contentDescription = "Edit")
                         }
                     }
@@ -81,25 +81,23 @@ fun TaskDetailContent(
                 .padding(horizontal = 16.dp)
         ) {
             if (state.mode.isEditable()) {
-                EditSection(task = state.task, contacts = state.contacts, onEvent = onEvent)
+                EditSection(state = state, onEvent = onEvent)
             } else {
-                ViewSection(task = state.task, onEvent = onEvent)
+                ViewSection(state = state, onEvent = onEvent)
             }
         }
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun TaskDetailContentPreview() {
-    TaskDetailContent(
-        state = TaskDetailState(
-            mode = TaskDetailMode.VIEW,
-            task = Task(
+fun ActionDetailContentPreview() {
+    ActionDetailContent(
+        state = ActionDetailState(
+            mode = ActionDetailMode.VIEW,
+            action = Action(
                 id = 1L,
-                title = "Title of the task",
-                content = "This is the content of the task. Bla bla bla...",
+                title = "Title of the action",
                 createdAt = 0,
             )
         ),

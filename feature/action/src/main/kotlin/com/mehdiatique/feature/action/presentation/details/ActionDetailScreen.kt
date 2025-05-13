@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.tasks.presentation.details
+package com.mehdiatique.feature.action.presentation.details
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.ResizeMode
@@ -17,12 +17,12 @@ import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun TaskDetailScreen(
-    viewModel: TaskDetailViewModel = hiltViewModel(),
+fun ActionDetailScreen(
+    viewModel: ActionDetailViewModel = hiltViewModel(),
     onClose: () -> Unit,
     onNavigateToContact: (Long) -> Unit,
-    onNavigateToAddNote: () -> Unit,
-    onNavigateToNote: (Long) -> Unit
+    onNavigateToAddInsight: () -> Unit,
+    onNavigateToInsight: (Long) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -30,29 +30,29 @@ fun TaskDetailScreen(
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
 
-    val sharedKey = state.task.id.let { "task-$it" }
+    val sharedKey = state.action.id.let { "action-$it" }
 
     LaunchedEffect(state.error) {
         state.error?.let { errorMsg ->
             snackbarHostState.showSnackbar(message = errorMsg)
-            viewModel.onEvent(TaskDetailEvent.ErrorShown)
+            viewModel.onEvent(ActionDetailEvent.ErrorShown)
         }
     }
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
-                is TaskDetailUiEvent.TaskSaved -> viewModel.onEvent(TaskDetailEvent.CloseEdit)
-                is TaskDetailUiEvent.CloseScreen -> onClose()
-                is TaskDetailUiEvent.NavigateToContact -> onNavigateToContact(event.contactId)
-                is TaskDetailUiEvent.NavigateToAddNote -> onNavigateToAddNote()
-                is TaskDetailUiEvent.NavigateToNote -> onNavigateToNote(event.noteId)
+                is ActionDetailUiEvent.ActionSaved -> viewModel.onEvent(ActionDetailEvent.CloseEdit)
+                is ActionDetailUiEvent.CloseScreen -> onClose()
+                is ActionDetailUiEvent.NavigateToContact -> onNavigateToContact(event.contactId)
+                is ActionDetailUiEvent.NavigateToAddInsight -> onNavigateToAddInsight()
+                is ActionDetailUiEvent.NavigateToInsight -> onNavigateToInsight(event.insightId)
             }
         }
     }
 
     with(sharedTransitionScope) {
-        TaskDetailContent(
+        ActionDetailContent(
             state = state,
             snackbarHostState = snackbarHostState,
             onEvent = viewModel::onEvent,

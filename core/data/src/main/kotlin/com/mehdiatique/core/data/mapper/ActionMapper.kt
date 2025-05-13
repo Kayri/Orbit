@@ -6,7 +6,7 @@ import com.mehdiatique.core.database.entity.ActionEntity
 import com.mehdiatique.core.database.relationship.ActionWithInsights
 
 /**
- * Maps [ActionWithInsights] (including owner and linked note) to [Action] domain model.
+ * Maps [ActionWithInsights] (including owner) to [Action] domain model.
  */
 fun ActionWithInsights.toDomain() = Action(
     id = action.actionId,
@@ -18,7 +18,6 @@ fun ActionWithInsights.toDomain() = Action(
     createdAt = action.createdAt,
     updatedAt = action.updatedAt,
     ownerId = action.contactOwnerId,
-    insights = insights.map { it.toDomain() }
 )
 
 /**

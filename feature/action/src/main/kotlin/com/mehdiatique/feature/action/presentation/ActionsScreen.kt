@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.tasks.presentation
+package com.mehdiatique.feature.action.presentation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope.ResizeMode
@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mehdiatique.core.data.model.Task
+import com.mehdiatique.core.data.model.Action
 import com.mehdiatique.orbit.design.components.AnimatedFab
 import com.mehdiatique.orbit.design.components.SearchBar
 import com.mehdiatique.orbit.design.theme.OrbitTheme
@@ -49,50 +49,50 @@ import com.mehdiatique.orbit.design.transition.LocalAnimatedVisibilityScope
 import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
 
 /**
- * The main screen for displaying and managing tasks.
+ * The main screen for displaying and managing actions.
  *
  * Connects to the ViewModel, handles UI state and events,
- * and delegates rendering to [TasksScreenContent].
+ * and delegates rendering to [ActionsScreenContent].
  *
  * @param viewModel The ViewModel providing UI state and events.
- * @param navigateToDetail Called when the user requests to view or edit a task.
+ * @param navigateToDetail Called when the user requests to view or edit a action.
  */
 @Composable
-fun TasksScreen(
-    viewModel: TasksViewModel = hiltViewModel(),
+fun ActionsScreen(
+    viewModel: ActionsViewModel = hiltViewModel(),
     navigateToDetail: (Long?) -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val state: TasksState by viewModel.state.collectAsStateWithLifecycle()
+    val state: ActionsState by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.error) {
         state.error?.let { errorMsg ->
             snackbarHostState.showSnackbar(message = errorMsg)
-            viewModel.onEvent(TasksEvent.ErrorShown)
+            viewModel.onEvent(ActionsEvent.ErrorShown)
         }
     }
 
-    TasksScreenContent(
+    ActionsScreenContent(
         state = state,
         snackbarHostState = snackbarHostState,
-        onSearchQueryChange = { viewModel.onEvent(TasksEvent.SearchQueryChanged(it)) },
+        onSearchQueryChange = { viewModel.onEvent(ActionsEvent.SearchQueryChanged(it)) },
         navigateToDetail = navigateToDetail,
     )
 }
 
 /**
- * Displays the tasks UI including search, list, and actions.
+ * Displays the actions UI including search, list, and actions.
  *
  * Stateless and preview-friendly version of the screen.
  *
  * @param state The UI state to render.
  * @param snackbarHostState Snackbar host for transient messages.
  * @param onSearchQueryChange Called when the search query changes.
- * @param navigateToDetail Called when a task is selected or a new one is added.
+ * @param navigateToDetail Called when a action is selected or a new one is added.
  */
 @Composable
-fun TasksScreenContent(
-    state: TasksState,
+fun ActionsScreenContent(
+    state: ActionsState,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     onSearchQueryChange: (String) -> Unit = {},
     navigateToDetail: (Long?) -> Unit = {},
@@ -103,12 +103,12 @@ fun TasksScreenContent(
             SearchBar(
                 query = state.searchQuery,
                 onQueryChange = onSearchQueryChange,
-                placeholder = "Search Tasks"
+                placeholder = "Search Actions"
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         floatingActionButton = {
-            AnimatedFab(contentDescription = "Add Tasks") { navigateToDetail(null) }
+            AnimatedFab(contentDescription = "Add Actions") { navigateToDetail(null) }
         }
     ) { innerPadding ->
         LazyColumn(
@@ -117,22 +117,22 @@ fun TasksScreenContent(
                 .padding(innerPadding)
                 .padding(16.dp)
         ) {
-            items(items = state.tasks) { task ->
-                TaskItem(task = task, onClick = { navigateToDetail(task.id) })
+            items(items = state.actions) { action ->
+                ActionItem(action = action, onClick = { navigateToDetail(action.id) })
             }
         }
     }
 }
 
 /**
- * Displays a single task entry with their title and content.
+ * Displays a single action entry with their title and content.
  *
- * @param task The task data to display.
+ * @param action The action data to display.
  * @param onClick Callback triggered when the item is tapped.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun TaskItem(task: Task, onClick: () -> Unit) {
+fun ActionItem(action: Action, onClick: () -> Unit) {
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
 
@@ -142,7 +142,7 @@ fun TaskItem(task: Task, onClick: () -> Unit) {
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .sharedBounds(
-                    sharedContentState = rememberSharedContentState(key = "task-${task.id}"),
+                    sharedContentState = rememberSharedContentState(key = "action-${action.id}"),
                     animatedVisibilityScope = animatedVisibilityScope,
                     enter = fadeIn(),
                     exit = fadeOut(),
@@ -164,14 +164,14 @@ fun TaskItem(task: Task, onClick: () -> Unit) {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = task.title,
+                        text = action.title,
                         style = MaterialTheme.typography.titleMedium,
-                        textDecoration = if (task.isDone) TextDecoration.LineThrough else null
+                        textDecoration = if (action.isDone) TextDecoration.LineThrough else null
                     )
 
-                    if (task.dueAt != null) {
+                    if (action.dueAt != null) {
                         Text(
-                            text = "Due: ${task.formattedDueDate()}",
+                            text = "Due: ${action.formattedDueDate()}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -179,7 +179,7 @@ fun TaskItem(task: Task, onClick: () -> Unit) {
                 }
 
                 // Checkbox or done icon
-                if (task.isDone) {
+                if (action.isDone) {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Completed",
@@ -209,15 +209,15 @@ fun PriorityIndicator(priority: Int) {
 
 @Preview(showBackground = true)
 @Composable
-fun TasksScreenPreview() {
+fun ActionsScreenPreview() {
     OrbitTheme {
-        val task = Task(
-            id = 1, content = "Content of a task", title = "Task Title",
+        val action = Action(
+            id = 1, title = "Action Title",
             isDone = true, createdAt = 0
         )
-        TasksScreenContent(
-            state = TasksState(
-                tasks = listOf(task, task, task),
+        ActionsScreenContent(
+            state = ActionsState(
+                actions = listOf(action, action, action),
             )
         )
     }

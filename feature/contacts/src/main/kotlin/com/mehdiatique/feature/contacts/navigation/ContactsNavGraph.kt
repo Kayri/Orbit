@@ -6,7 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mehdiatique.core.navigation_contract.ContactNav
-import com.mehdiatique.core.navigation_contract.NotesNav
+import com.mehdiatique.core.navigation_contract.InsightNav
 import com.mehdiatique.feature.contacts.presentation.ContactsScreen
 import com.mehdiatique.feature.contacts.presentation.details.ContactDetailScreen
 
@@ -26,10 +26,10 @@ fun NavGraphBuilder.contactsNavGraph(navController: NavController) {
     ) {
         ContactDetailScreen(
             onClose = { navController.popBackStack() },
-            onNavigateToAddNote = { contactId -> navController.navigate(NotesNav.detailRoute(contactId = contactId)) },
+            onNavigateToAddNote = { contactId -> navController.navigate(InsightNav.detailRoute(contactId = contactId)) },
             onNavigateToNote = { noteId ->
-                navController.navigate(NotesNav.detailRoute(noteId = noteId)) {
-                    popUpTo(NotesNav.routePattern()) { inclusive = false }
+                navController.navigate(InsightNav.detailRoute(insightId = noteId)) {
+                    popUpTo(InsightNav.routePattern()) { inclusive = false }
                     launchSingleTop = true
                 }
             },

@@ -37,13 +37,12 @@ fun ViewSection(
                 onEvent(ContactDetailEvent.AddNote)
             }, icon = Icons.Default.Add)
 
-            contact.noteList
-                ?.take(4)
-                ?.forEach { note ->
+            contact.insights
+                .take(4)
+                .forEach { insight ->
                     PlaceholderItem(
-                        title = note.title,
-                        content = note.content,
-                        onClick = { onEvent(ContactDetailEvent.OpenNote(note.id)) }
+                        content = insight.content,
+                        onClick = { onEvent(ContactDetailEvent.OpenNote(insight.id)) }
                     )
                 }
 
@@ -91,14 +90,13 @@ fun SectionHeader(title: String, onAddClick: () -> Unit, icon: androidx.compose.
  * Temporary placeholder for future task/note items.
  */
 @Composable
-fun PlaceholderItem(title: String, content: String, onClick: () -> Unit) {
+fun PlaceholderItem(content: String, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
             .padding(vertical = 8.dp)
     ) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium)
         Text(
             text = content,
             style = MaterialTheme.typography.bodyMedium,

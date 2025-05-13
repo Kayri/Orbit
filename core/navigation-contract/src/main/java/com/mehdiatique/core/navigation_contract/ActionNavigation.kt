@@ -1,13 +1,13 @@
 package com.mehdiatique.core.navigation_contract
 
-object TasksNav {
-    const val ROUTE_DETAIL = "task_detail"
-    const val ARG_TASK_ID = "taskId"
+object ActionNav {
+    const val ROUTE_DETAIL = "action_detail"
+    const val ARG_ACTION_ID = "actionId"
     const val ARG_CONTACT_ID = "contactId"
 
-    fun detailRoute(taskId: Long? = null, contactId: Long? = null): String {
+    fun detailRoute(actionId: Long? = null, contactId: Long? = null): String {
         val args = listOfNotNull(
-            taskId?.let { "$ARG_TASK_ID=$it" },
+            actionId?.let { "$ARG_ACTION_ID=$it" },
             contactId?.let { "$ARG_CONTACT_ID=$it" }
         )
         return if (args.isEmpty()) ROUTE_DETAIL else "$ROUTE_DETAIL?${args.joinToString("&")}"
@@ -17,5 +17,5 @@ object TasksNav {
      * Full route pattern for navigation graph declaration.
      */
     fun routePattern(): String =
-        "$ROUTE_DETAIL?$ARG_TASK_ID={$ARG_TASK_ID}&$ARG_CONTACT_ID={$ARG_CONTACT_ID}"
+        "$ROUTE_DETAIL?$ARG_ACTION_ID={$ARG_ACTION_ID}&$ARG_CONTACT_ID={$ARG_CONTACT_ID}"
 }

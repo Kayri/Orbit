@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.tasks.presentation.details.components
+package com.mehdiatique.feature.action.presentation.details.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,18 +11,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.core.data.model.Priority
-import com.mehdiatique.core.data.model.Task
-import com.mehdiatique.feature.tasks.presentation.details.TaskDetailEvent
+import com.mehdiatique.core.data.model.Action
+import com.mehdiatique.feature.action.presentation.details.ActionDetailEvent
+import com.mehdiatique.feature.action.presentation.details.ActionDetailMode
+import com.mehdiatique.feature.action.presentation.details.ActionDetailState
 import com.mehdiatique.orbit.design.components.DropdownSelector
 
 /**
- * Editable fields for adding or updating a task.
+ * Editable fields for adding or updating a action.
  */
 @Composable
 fun EditSection(
-    task: Task,
-    contacts: List<Contact>,
-    onEvent: (TaskDetailEvent) -> Unit,
+    state: ActionDetailState,
+    onEvent: (ActionDetailEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -31,24 +32,17 @@ fun EditSection(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         OutlinedTextField(
-            value = task.title,
-            onValueChange = { onEvent(TaskDetailEvent.TitleChanged(it)) },
+            value = state.action.title,
+            onValueChange = { onEvent(ActionDetailEvent.TitleChanged(it)) },
             label = { Text("Title") },
             modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = task.content.orEmpty(),
-            onValueChange = { onEvent(TaskDetailEvent.ContentChanged(it)) },
-            label = { Text("Content") },
-            modifier = Modifier
-                .fillMaxWidth()
         )
 
         DropdownSelector(
             items = Priority.entries.toList(),
-            selected = task.priority,
+            selected = state.action.priority,
             onSelected = { priority ->
-                priority?.let { onEvent(TaskDetailEvent.PriorityChanged(it)) }
+                priority?.let { onEvent(ActionDetailEvent.PriorityChanged(it)) }
             },
             itemLabel = { it.label }
         ) { Text("Priority") }
@@ -59,13 +53,13 @@ fun EditSection(
 //        )
 
         DropdownSelector(
-            items = contacts,
-            selected = task.owner,
+            items = state.contacts,
+            selected = state.owner,
             onSelected = { contact ->
-                onEvent(TaskDetailEvent.ContactChanged(contact))
+                onEvent(ActionDetailEvent.ContactChanged(contact?.id))
             },
             itemLabel = { it.name },
-            onDropdownOpened = { onEvent(TaskDetailEvent.LoadAllContacts) }
+            onDropdownOpened = { onEvent(ActionDetailEvent.LoadAllContacts) }
         ) { Text("Owner") }
     }
 }
@@ -75,13 +69,15 @@ fun EditSection(
 fun EditSectionPreview() {
     Column {
         EditSection(
-            task = Task(
-                id = -1,
-                content = "Ada Lovelace",
-                title = "ada@code.com",
-                createdAt = 0,
+            state = ActionDetailState(
+                action = Action(
+                    id = -1,
+                    title = "ada@code.com",
+                    createdAt = 0,
+                ),
+                mode = ActionDetailMode.EDIT,
+                contacts = emptyList<Contact>(),
             ),
-            contacts = emptyList<Contact>(),
             onEvent = {}
         )
     }

@@ -12,6 +12,5 @@ data class Action(
     val completedAt: Long? = null,   // Set when action is marked done
     val createdAt: Long,
     val updatedAt: Long? = null,
-    val ownerId: Long? = null,
-    val insights: List<Insight> = emptyList()  // Context/memories for this action
+    val ownerId: Long? = null
 )

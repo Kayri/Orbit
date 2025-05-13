@@ -1,4 +1,4 @@
-package com.mehdiatique.feature.tasks.presentation.details.components
+package com.mehdiatique.feature.action.presentation.details.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,37 +15,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mehdiatique.core.data.model.Task
-import com.mehdiatique.feature.tasks.presentation.details.TaskDetailEvent
+import com.mehdiatique.core.data.model.Action
+import com.mehdiatique.feature.action.presentation.details.ActionDetailEvent
+import com.mehdiatique.feature.action.presentation.details.ActionDetailMode
+import com.mehdiatique.feature.action.presentation.details.ActionDetailState
 
 /**
- * Read-only section that displays the task's information.
+ * Read-only section that displays the action's information.
  */
 @Composable
 fun ViewSection(
-    task: Task,
-    onEvent: (TaskDetailEvent) -> Unit,
+    state: ActionDetailState,
+    onEvent: (ActionDetailEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text("title: " + task.title)
-        Text("content: " + task.content)
-        task.owner?.let { contact ->
-            CustomCard(onClick = { onEvent(TaskDetailEvent.OpenContact(contact.id)) }) {
+        Text("title: " + state.action.title)
+        state.owner?.let { contact ->
+            CustomCard(onClick = { onEvent(ActionDetailEvent.OpenContact(contact.id)) }) {
                 Text("Owner: ${contact.name}", modifier = Modifier.padding(8.dp))
             }
         }
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
-            task.note?.let { note ->
-                CustomCard(onClick = { onEvent(TaskDetailEvent.OpenNote(noteId = note.id)) }) {
-                    Text("Note: ${note.title}", modifier = Modifier.padding(8.dp))
+            state.insights.forEach { insight ->
+                CustomCard(onClick = { onEvent(ActionDetailEvent.OpenInsight(insightId = insight.id)) }) {
+                    Text("Insight: ${insight.content}", modifier = Modifier.padding(8.dp))
                 }
             }
-            IconButton(onClick = { onEvent(TaskDetailEvent.AddNote) }) {
-                Icon(Icons.Default.Add, contentDescription = "Add note")
+            IconButton(onClick = { onEvent(ActionDetailEvent.AddInsight) }) {
+                Icon(Icons.Default.Add, contentDescription = "Add insight")
             }
         }
     }
@@ -67,11 +68,13 @@ fun CustomCard(
 @Composable
 fun ViewSectionPreview() {
     ViewSection(
-        task = Task(
-            id = -1,
-            content = "Content of the task",
-            title = "Task Title",
-            createdAt = 0,
+        state = ActionDetailState(
+            action = Action(
+                id = -1,
+                title = "Task Title",
+                createdAt = 0,
+            ),
+            mode = ActionDetailMode.VIEW
         ),
         onEvent = {}
     )

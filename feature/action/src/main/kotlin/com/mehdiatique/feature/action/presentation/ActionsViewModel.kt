@@ -1,8 +1,8 @@
-package com.mehdiatique.feature.tasks.presentation
+package com.mehdiatique.feature.action.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mehdiatique.core.data.repository.TaskRepository
+import com.mehdiatique.core.data.repository.ActionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,25 +15,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel responsible for managing task data, search filtering, and UI state
- * for the Tasks feature. It observes the task list from the repository and
+ * ViewModel responsible for managing action data, search filtering, and UI state
+ * for the Actions feature. It observes the action list from the repository and
  * exposes a filtered version based on the current search query.
  *
  * This ViewModel follows an MVI-inspired pattern using:
- * - [TasksState] as the single source of truth for UI state.
- * - [TasksEvent] to handle user actions like search input.
+ * - [ActionsState] as the single source of truth for UI state.
+ * - [ActionsEvent] to handle user actions like search input.
  */
 @HiltViewModel
-class TasksViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+class ActionsViewModel @Inject constructor(
+    private val actionRepository: ActionRepository
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(TasksState(isLoading = true))
-    val state: StateFlow<TasksState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(ActionsState(isLoading = true))
+    val state: StateFlow<ActionsState> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            taskRepository.getAllTasks()
+            actionRepository.getAllActions()
                 .onStart { _state.update { it.copy(isLoading = true) } }
                 .catch { e ->
                     _state.update {
@@ -43,22 +43,22 @@ class TasksViewModel @Inject constructor(
                         )
                     }
                 }
-                .collect { tasks ->
-                    _state.update { current -> current.copy(tasks = tasks, isLoading = false) }
+                .collect { actions ->
+                    _state.update { current -> current.copy(actions = actions, isLoading = false) }
                 }
         }
     }
 
     /**
-     * Searches for tasks matching the given query and updates the UI state.
+     * Searches for actions matching the given query and updates the UI state.
      * Cancels any ongoing search to keep results up to date.
      *
      * @param query The search text entered by the user.
      */
-    private fun searchTasks(query: String) {
+    private fun searchActions(query: String) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            taskRepository.searchTasks(query)
+            actionRepository.searchActions(query)
                 .onStart { _state.update { it.copy(isLoading = true) } }
                 .catch { e ->
                     _state.update {
@@ -68,8 +68,8 @@ class TasksViewModel @Inject constructor(
                         )
                     }
                 }
-                .collect { tasks ->
-                    _state.update { current -> current.copy(tasks = tasks, isLoading = false) }
+                .collect { actions ->
+                    _state.update { current -> current.copy(actions = actions, isLoading = false) }
                 }
         }
     }
@@ -81,14 +81,14 @@ class TasksViewModel @Inject constructor(
      *
      * @param event The event triggered by user interaction.
      */
-    fun onEvent(event: TasksEvent) {
+    fun onEvent(event: ActionsEvent) {
         when (event) {
-            is TasksEvent.SearchQueryChanged -> {
+            is ActionsEvent.SearchQueryChanged -> {
                 _state.update { current -> current.copy(searchQuery = event.query) }
-                searchTasks(event.query)
+                searchActions(event.query)
             }
 
-            is TasksEvent.ErrorShown -> {
+            is ActionsEvent.ErrorShown -> {
                 _state.update { it.copy(error = null) }
             }
         }

@@ -1,10 +1,11 @@
-package com.mehdiatique.feature.tasks.presentation.details
+package com.mehdiatique.feature.action.presentation.details
 
 import com.mehdiatique.core.data.model.Contact
-import com.mehdiatique.core.data.model.Task
-import com.mehdiatique.feature.tasks.presentation.details.TaskDetailMode.ADD
-import com.mehdiatique.feature.tasks.presentation.details.TaskDetailMode.EDIT
-import com.mehdiatique.feature.tasks.presentation.details.TaskDetailMode.VIEW
+import com.mehdiatique.core.data.model.Action
+import com.mehdiatique.core.data.model.Insight
+import com.mehdiatique.feature.action.presentation.details.ActionDetailMode.ADD
+import com.mehdiatique.feature.action.presentation.details.ActionDetailMode.EDIT
+import com.mehdiatique.feature.action.presentation.details.ActionDetailMode.VIEW
 
 /**
  * Represents the UI state of the Task Detail screen.
@@ -12,9 +13,11 @@ import com.mehdiatique.feature.tasks.presentation.details.TaskDetailMode.VIEW
  * Holds the current task data, screen mode (add, view, edit),
  * loading status, and any error messages.
  */
-data class TaskDetailState(
-    val task: Task,
-    val mode: TaskDetailMode,
+data class ActionDetailState(
+    val action: Action,
+    val mode: ActionDetailMode,
+    val owner: Contact? = null,
+    val insights: List<Insight> = emptyList(),
     val contacts: List<Contact> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
@@ -27,7 +30,7 @@ data class TaskDetailState(
  * - [VIEW]: User is viewing an existing task.
  * - [EDIT]: User is editing an existing task.
  */
-enum class TaskDetailMode {
+enum class ActionDetailMode {
     ADD,
     VIEW,
     EDIT;

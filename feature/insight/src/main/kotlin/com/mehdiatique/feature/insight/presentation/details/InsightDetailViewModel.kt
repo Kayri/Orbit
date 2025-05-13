@@ -80,7 +80,7 @@ class InsightDetailViewModel @Inject constructor(
 
     /**
      * Handles One-time UI events such as closing the screen, confirming a save,
-     * or navigating to related features like tasks or insights.
+     * or navigating to related features like actions or insights.
      *
      * @param event The event to process.
      */
