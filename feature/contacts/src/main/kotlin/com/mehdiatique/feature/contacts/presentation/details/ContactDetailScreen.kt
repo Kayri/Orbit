@@ -21,10 +21,10 @@ import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
 fun ContactDetailScreen(
     viewModel: ContactDetailViewModel = hiltViewModel(),
     onClose: () -> Unit,
-    onNavigateToAddNote: (Long) -> Unit,
-    onNavigateToNote: (Long) -> Unit,
-    onNavigateToAddTask: (Long) -> Unit,
-    onNavigateToTask: (Long) -> Unit
+    onNavigateToAddInsight: (Long) -> Unit,
+    onNavigateToInsight: (Long) -> Unit,
+    onNavigateToAddAction: (Long) -> Unit,
+    onNavigateToAction: (Long) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -46,18 +46,17 @@ fun ContactDetailScreen(
             when (event) {
                 is ContactDetailUiEvent.ContactSaved -> viewModel.onEvent(ContactDetailEvent.CloseEdit)
                 is ContactDetailUiEvent.CloseScreen -> onClose()
-                is ContactDetailUiEvent.NavigateToAddNote -> onNavigateToAddNote(event.contactId)
-                is ContactDetailUiEvent.NavigateToNote -> onNavigateToNote(event.noteId)
-                is ContactDetailUiEvent.NavigateToAddTask -> onNavigateToAddTask(event.contactId)
-                is ContactDetailUiEvent.NavigateToTask -> onNavigateToTask(event.taskId)
+                is ContactDetailUiEvent.NavigateToAddAction -> onNavigateToAddAction(event.contactId)
+                is ContactDetailUiEvent.NavigateToAction -> onNavigateToAction(event.actionId)
+                is ContactDetailUiEvent.NavigateToAddInsight -> onNavigateToAddInsight(event.contactId)
+                is ContactDetailUiEvent.NavigateToInsight -> onNavigateToInsight(event.insightId)
             }
         }
     }
 
     with(sharedTransitionScope) {
         ContactDetailContent(
-            mode = state.mode,
-            contact = state.contact,
+            state = state,
             snackbarHostState = snackbarHostState,
             onEvent = viewModel::onEvent,
             onUiEvent = viewModel::onUiEvent,

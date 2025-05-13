@@ -4,7 +4,9 @@ import com.mehdiatique.core.data.model.Insight
 import com.mehdiatique.core.database.entity.InsightEntity
 
 /**
- * Maps [InsightEntity] to [Insight] domain model without relations.
+ * Maps [InsightEntity] to [Insight] domain model.
+ *
+ * Note: This performs a direct mapping without resolving related owners or actions.
  */
 fun InsightEntity.toDomain() = Insight(
     id = insightId,

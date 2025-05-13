@@ -11,6 +11,4 @@ data class Contact(
     val company: String? = null,
     val description: String? = null,
     val createdAt: Long = 0,
-    val insights: List<Insight> = emptyList(),   // General memories
-    val actions: List<Action> = emptyList()      // To-do/actions related to the contact
 )

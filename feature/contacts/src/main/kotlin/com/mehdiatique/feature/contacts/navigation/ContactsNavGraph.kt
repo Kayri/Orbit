@@ -26,15 +26,15 @@ fun NavGraphBuilder.contactsNavGraph(navController: NavController) {
     ) {
         ContactDetailScreen(
             onClose = { navController.popBackStack() },
-            onNavigateToAddNote = { contactId -> navController.navigate(InsightNav.detailRoute(contactId = contactId)) },
-            onNavigateToNote = { noteId ->
-                navController.navigate(InsightNav.detailRoute(insightId = noteId)) {
+            onNavigateToAddAction = { contactId -> },
+            onNavigateToAction = { actionId -> },
+            onNavigateToAddInsight = { contactId -> navController.navigate(InsightNav.detailRoute(contactId = contactId)) },
+            onNavigateToInsight = { insightId ->
+                navController.navigate(InsightNav.detailRoute(insightId = insightId)) {
                     popUpTo(InsightNav.routePattern()) { inclusive = false }
                     launchSingleTop = true
                 }
             },
-            onNavigateToAddTask = { contactId -> },
-            onNavigateToTask = { taskId -> }
         )
     }
 }

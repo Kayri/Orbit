@@ -6,7 +6,10 @@ import com.mehdiatique.core.database.entity.ActionEntity
 import com.mehdiatique.core.database.relationship.ActionWithInsights
 
 /**
- * Maps [ActionWithInsights] (including owner) to [Action] domain model.
+ * Maps [ActionWithInsights] to [Action] domain model.
+ *
+ * Note: This mapping only converts the [ActionEntity] part.
+ * Related insights and owner details should be handled separately.
  */
 fun ActionWithInsights.toDomain() = Action(
     id = action.actionId,
@@ -18,20 +21,6 @@ fun ActionWithInsights.toDomain() = Action(
     createdAt = action.createdAt,
     updatedAt = action.updatedAt,
     ownerId = action.contactOwnerId,
-)
-
-/**
- * Maps [ActionEntity] to [Action] domain model without relations.
- */
-fun ActionEntity.toDomain() = Action(
-    id = actionId,
-    title = title,
-    isDone = isDone,
-    priority = Priority.fromOrdinal(priority),
-    dueAt = dueAt,
-    completedAt = completedAt,
-    createdAt = createdAt,
-    updatedAt = updatedAt
 )
 
 /**

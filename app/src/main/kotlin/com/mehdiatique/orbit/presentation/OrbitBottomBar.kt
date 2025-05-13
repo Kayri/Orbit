@@ -15,7 +15,7 @@ import androidx.navigation.NavController
 /**
  * A reusable bottom navigation bar for the Orbit app.
  *
- * This composable displays navigation items for core app features like Contacts, Tasks, and Notes.
+ * This composable displays navigation items for core app features like Contacts, Actions, and Insights.
  * It highlights the selected item based on the current route and supports state restoration when navigating.
  *
  * The bottom bar is intended to be used globally across the app (e.g., in [OrbitApp]), while
@@ -38,14 +38,14 @@ fun OrbitBottomBar(
             icon = { Icon(Icons.Filled.Person, contentDescription = "Contacts") }
         ),
         BottomNavItem(
-            route = "tasks",
-            label = "Tasks",
-            icon = { Icon(Icons.Filled.Check, contentDescription = "Tasks") }
+            route = "actions",
+            label = "Actions",
+            icon = { Icon(Icons.Filled.Check, contentDescription = "Actions") }
         ),
         BottomNavItem(
-            route = "notes",
-            label = "Notes",
-            icon = { Icon(Icons.Filled.Search, contentDescription = "Notes") }
+            route = "insights",
+            label = "Insights",
+            icon = { Icon(Icons.Filled.Search, contentDescription = "Insights") }
         )
     )
 

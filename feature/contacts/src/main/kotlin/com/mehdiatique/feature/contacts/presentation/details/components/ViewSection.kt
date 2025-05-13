@@ -21,35 +21,36 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.feature.contacts.presentation.details.ContactDetailEvent
+import com.mehdiatique.feature.contacts.presentation.details.ContactDetailState
 
 @Composable
 fun ViewSection(
-    contact: Contact?,
+    state: ContactDetailState,
     onEvent: (ContactDetailEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
-        contact?.let {
+        state.contact?.let {
             ContactInfoSection(it)
             Spacer(Modifier.height(24.dp))
 
-            SectionHeader("Notes", onAddClick = {
-                onEvent(ContactDetailEvent.AddNote)
+            SectionHeader("Insights", onAddClick = {
+                onEvent(ContactDetailEvent.AddInsight)
             }, icon = Icons.Default.Add)
 
-            contact.insights
+            state.insights
                 .take(4)
                 .forEach { insight ->
                     PlaceholderItem(
                         content = insight.content,
-                        onClick = { onEvent(ContactDetailEvent.OpenNote(insight.id)) }
+                        onClick = { onEvent(ContactDetailEvent.OpenInsight(insight.id)) }
                     )
                 }
 
             Spacer(Modifier.height(24.dp))
 
-            SectionHeader("Tasks", onAddClick = {
-                onEvent(ContactDetailEvent.AddTask)
+            SectionHeader("Actions", onAddClick = {
+                onEvent(ContactDetailEvent.AddAction)
             }, icon = Icons.Default.Add)
 
         }
@@ -71,7 +72,7 @@ fun ContactInfoSection(contact: Contact) {
 
 
 /**
- * Header row with title and add button, used for Notes and Tasks.
+ * Header row with title and add button, used for Actions and Insights.
  */
 @Composable
 fun SectionHeader(title: String, onAddClick: () -> Unit, icon: androidx.compose.ui.graphics.vector.ImageVector) {
@@ -87,7 +88,7 @@ fun SectionHeader(title: String, onAddClick: () -> Unit, icon: androidx.compose.
 }
 
 /**
- * Temporary placeholder for future task/note items.
+ * Temporary placeholder for future actions/insights items.
  */
 @Composable
 fun PlaceholderItem(content: String, onClick: () -> Unit) {

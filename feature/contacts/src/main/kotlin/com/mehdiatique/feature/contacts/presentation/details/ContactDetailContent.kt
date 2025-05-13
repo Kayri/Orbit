@@ -29,8 +29,7 @@ import com.mehdiatique.feature.contacts.presentation.details.components.ViewSect
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContactDetailContent(
-    mode: ContactDetailMode,
-    contact: Contact?,
+    state: ContactDetailState,
     snackbarHostState: SnackbarHostState,
     onEvent: (ContactDetailEvent) -> Unit,
     onUiEvent: (ContactDetailUiEvent) -> Unit,
@@ -42,16 +41,16 @@ fun ContactDetailContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = when (mode) {
+                        text = when (state.mode) {
                             ContactDetailMode.ADD -> "New Contact"
                             ContactDetailMode.EDIT -> "Edit Contact"
-                            ContactDetailMode.VIEW -> contact?.name ?: "Contact"
+                            ContactDetailMode.VIEW -> state.contact?.name ?: "Contact"
                         }
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (mode == ContactDetailMode.EDIT) onEvent(ContactDetailEvent.CloseEdit)
+                        if (state.mode == ContactDetailMode.EDIT) onEvent(ContactDetailEvent.CloseEdit)
                         else onUiEvent(ContactDetailUiEvent.CloseScreen)
 
                     }) {
@@ -59,10 +58,10 @@ fun ContactDetailContent(
                     }
                 },
                 actions = {
-                    if (mode.isEditable()) {
+                    if (state.mode.isEditable()) {
                         TextButton(
                             onClick = { onEvent(ContactDetailEvent.SaveContact) },
-                            enabled = contact?.name?.isNotBlank() == true
+                            enabled = state.contact?.name?.isNotBlank() == true
                         ) {
                             Text("Save")
                         }
@@ -76,14 +75,15 @@ fun ContactDetailContent(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
-        Column (modifier = Modifier
+        Column(
+            modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
-        ){
-            if (mode.isEditable()) {
-                EditSection(contact = contact, onEvent = onEvent)
+        ) {
+            if (state.mode.isEditable()) {
+                EditSection(state = state, onEvent = onEvent)
             } else {
-                ViewSection(contact = contact, onEvent = onEvent)
+                ViewSection(state = state, onEvent = onEvent)
             }
         }
     }
@@ -93,15 +93,17 @@ fun ContactDetailContent(
 @Composable
 fun ContactDetailContentPreview() {
     ContactDetailContent(
-        mode = ContactDetailMode.VIEW,
-        contact = Contact(
-            id = 1L,
-            name = "Ada Lovelace",
-            email = "ada@code.com",
-            phone = "1234567890",
-            company = "Analytical Engine Inc.",
-            description = "Loves math and programming.",
-            createdAt = System.currentTimeMillis()
+        state = ContactDetailState(
+            mode = ContactDetailMode.VIEW,
+            contact = Contact(
+                id = 1L,
+                name = "Ada Lovelace",
+                email = "ada@code.com",
+                phone = "1234567890",
+                company = "Analytical Engine Inc.",
+                description = "Loves math and programming.",
+                createdAt = System.currentTimeMillis()
+            )
         ),
         snackbarHostState = SnackbarHostState(),
         onEvent = {},

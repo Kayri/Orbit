@@ -11,25 +11,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.feature.contacts.presentation.details.ContactDetailEvent
+import com.mehdiatique.feature.contacts.presentation.details.ContactDetailState
 
 /**
  * Editable fields for adding or updating a contact.
  */
 @Composable
 fun EditSection(
-    contact: Contact?,
+    state: ContactDetailState,
     onEvent: (ContactDetailEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
         OutlinedTextField(
-            value = contact?.name ?: "",
+            value = state.contact?.name ?: "",
             onValueChange = { onEvent(ContactDetailEvent.NameChanged(it)) },
             label = { Text("Name") },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
-            value = contact?.email.orEmpty(),
+            value = state.contact?.email.orEmpty(),
             onValueChange = { onEvent(ContactDetailEvent.EmailChanged(it)) },
             label = { Text("Email") },
             modifier = Modifier
@@ -37,7 +38,7 @@ fun EditSection(
                 .padding(top = 8.dp)
         )
         OutlinedTextField(
-            value = contact?.phone.orEmpty(),
+            value = state.contact?.phone.orEmpty(),
             onValueChange = { onEvent(ContactDetailEvent.PhoneChanged(it)) },
             label = { Text("Phone") },
             modifier = Modifier
@@ -45,7 +46,7 @@ fun EditSection(
                 .padding(top = 8.dp)
         )
         OutlinedTextField(
-            value = contact?.company.orEmpty(),
+            value = state.contact?.company.orEmpty(),
             onValueChange = { onEvent(ContactDetailEvent.CompanyChanged(it)) },
             label = { Text("Company") },
             modifier = Modifier
@@ -53,7 +54,7 @@ fun EditSection(
                 .padding(top = 8.dp)
         )
         OutlinedTextField(
-            value = contact?.description.orEmpty(),
+            value = state.contact?.description.orEmpty(),
             onValueChange = { onEvent(ContactDetailEvent.DescriptionChanged(it)) },
             label = { Text("Description") },
             modifier = Modifier
@@ -67,14 +68,16 @@ fun EditSection(
 @Composable
 fun EditSectionPreview() {
     EditSection(
-        contact = Contact(
-            id = -1,
-            name = "Ada Lovelace",
-            email = "ada@code.com",
-            phone = "123456789",
-            company = "Engine Inc.",
-            description = "Note about Ada",
-            createdAt = 0
+        state = ContactDetailState(
+            contact = Contact(
+                id = -1,
+                name = "Ada Lovelace",
+                email = "ada@code.com",
+                phone = "123456789",
+                company = "Engine Inc.",
+                description = "Note about Ada",
+                createdAt = 0
+            )
         ),
         onEvent = {}
     )
