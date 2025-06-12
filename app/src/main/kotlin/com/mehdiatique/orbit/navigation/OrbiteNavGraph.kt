@@ -1,7 +1,13 @@
 package com.mehdiatique.orbit.navigation
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.mehdiatique.core.ui_contract.ScreenUIConfig
 import com.mehdiatique.feature.action.navigation.ActionRoute
 import com.mehdiatique.feature.action.navigation.actionNavGraph
 import com.mehdiatique.feature.contacts.navigation.ContactsRoute
@@ -9,8 +15,11 @@ import com.mehdiatique.feature.contacts.navigation.contactsNavGraph
 import com.mehdiatique.feature.insight.navigation.InsightRoute
 import com.mehdiatique.feature.insight.navigation.insightNavGraph
 
-fun NavGraphBuilder.orbitNavGraph(navController: NavController) {
-    contactsNavGraph(navController)
+fun NavGraphBuilder.orbitNavGraph(
+    navController: NavController,
+    setConfig: (ScreenUIConfig) -> Unit
+) {
+    contactsNavGraph(navController = navController, setConfig = setConfig)
     insightNavGraph(navController)
     actionNavGraph(navController)
 }
@@ -23,10 +32,28 @@ fun NavGraphBuilder.orbitNavGraph(navController: NavController) {
  *
  * @property route The unique string identifier used by the navigation system.
  */
-sealed class OrbitRoute(val route: String) {
-    object Contacts : OrbitRoute(ContactsRoute.List.route)
-    object Insights : OrbitRoute(InsightRoute.List.route)
-    object Actions : OrbitRoute(ActionRoute.List.route)
+sealed class OrbitRoute(
+    val route: String,
+    val label: String,
+    val icon: ImageVector
+) {
+    object Contacts : OrbitRoute(
+        route = ContactsRoute.List.route,
+        label = "Contacts",
+        icon = Icons.Filled.Person
+    )
+
+    object Insights : OrbitRoute(
+        route = InsightRoute.List.route,
+        label = "Insights",
+        icon = Icons.Filled.Search
+    )
+
+    object Actions : OrbitRoute(
+        route = ActionRoute.List.route,
+        label = "Actions",
+        icon = Icons.Filled.Check
+    )
 
     companion object {
         val mainRoutes = listOf(Contacts, Actions, Insights)

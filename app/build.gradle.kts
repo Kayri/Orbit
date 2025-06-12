@@ -14,6 +14,7 @@ android {
     }
 }
 dependencies {
+    implementation(project(":core:ui-contract"))
     implementation(project(":design-system"))
     implementation(project(":feature:contacts"))
     implementation(project(":feature:insight"))

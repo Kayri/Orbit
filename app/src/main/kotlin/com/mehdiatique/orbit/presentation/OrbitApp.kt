@@ -3,68 +3,74 @@ package com.mehdiatique.orbit.presentation
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.mehdiatique.core.ui_contract.ScreenUIConfig
 import com.mehdiatique.orbit.design.transition.LocalAnimatedVisibilityScope
 import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
 import com.mehdiatique.orbit.navigation.OrbitRoute
 import com.mehdiatique.orbit.navigation.orbitNavGraph
 
 /**
- * The main UI container for Orbit.
+ * The main UI container for the Orbit app.
  *
- * This composable hosts the NavHost inside a SharedTransitionLayout + AnimatedContent wrapper,
- * providing transition scopes via CompositionLocals for shared element animations.
+ * This composable hosts the global [Scaffold] and [NavHost], providing a consistent layout
+ * structure with support for dynamic FAB, top bar, and snackbar per screen via [ScreenUIConfig].
  *
- * The bottom bar is displayed globally and remains consistent across feature screens.
+ * It also wraps the navigation graph in a [SharedTransitionLayout], enabling shared element
+ * transitions between screens that opt into them.
+ *
+ * The bottom navigation bar is displayed globally and remains visible across all feature screens.
+ *
+ * UI configuration is injected by feature navigation graphs using the [setConfig] callback,
+ * ensuring a modular and decoupled architecture.
  */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun OrbitApp() {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val screenConfig = remember { mutableStateOf(ScreenUIConfig()) }
 
     SharedTransitionLayout {
         CompositionLocalProvider(LocalSharedTransitionScope provides this) {
             AnimatedContent(
                 targetState = currentBackStackEntry,
-                label = "NavigationContent"
-            ) { backStackEntry ->
+                label = "AnimatedNavHost"
+            ) { _ ->
                 CompositionLocalProvider(LocalAnimatedVisibilityScope provides this) {
-                    val route = backStackEntry?.destination?.route
-                    val showBottomBar = OrbitRoute.mainRoutes.any { it.route == route }
-                    Column(
-                        verticalArrangement = Arrangement.Bottom,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background)
-                    ) {
+                    Scaffold(
+                        topBar = { screenConfig.value.topBar?.invoke() },
+                        floatingActionButton = { screenConfig.value.fab?.invoke() },
+                        snackbarHost = { SnackbarHost(hostState = screenConfig.value.snackbarHostState) },
+                        bottomBar = { OrbitBottomBar(navController = navController) },
+                    ) { innerPadding ->
+
                         NavHost(
                             navController = navController,
                             startDestination = OrbitRoute.Contacts.route,
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding)
                         ) {
-                            orbitNavGraph(navController = navController)
-                        }
-                        if (showBottomBar)
-                            OrbitBottomBar(
+                            orbitNavGraph(
                                 navController = navController,
-                                currentRoute = route
-                            )
+                                setConfig = { screenConfig.value = it })
+                        }
                     }
                 }
             }
         }
     }
 }
-
