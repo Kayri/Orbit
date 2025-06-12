@@ -18,17 +18,13 @@ class ContactRepositoryImpl @Inject constructor(
     private val contactDao: ContactDao
 ) : ContactRepository {
     override fun getAllContacts(): Flow<List<Contact>> =
-        contactDao.getAllContacts().map { entities ->
-            entities.map { it.toDomain() }
-        }
+        contactDao.getAllContacts().map { entities -> entities.map { it.toDomain() } }
 
     override fun getContactById(id: Long): Flow<Contact> =
         contactDao.getContactById(id = id).map { it.toDomain() }
 
     override fun searchContacts(query: String): Flow<List<Contact>> =
-        contactDao.searchContacts(query).map { entities ->
-            entities.map { it.toDomain() }
-        }
+        contactDao.searchContacts(query).map { entities -> entities.map { it.toDomain() } }
 
     override suspend fun addContact(contact: Contact): Long =
         contactDao.insertContact(contact = contact.toEntity())

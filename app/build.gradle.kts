@@ -14,10 +14,11 @@ android {
     }
 }
 dependencies {
+    implementation(project(":core:ui-contract"))
     implementation(project(":design-system"))
     implementation(project(":feature:contacts"))
-    implementation(project(":feature:notes"))
-    implementation(project(":feature:tasks"))
+    implementation(project(":feature:insight"))
+    implementation(project(":feature:action"))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation)
 

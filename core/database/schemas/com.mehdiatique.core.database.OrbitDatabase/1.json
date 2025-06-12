@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ea26efac8a4bad1b91fbbe2c9bd6aed9",
+    "identityHash": "53cdc635f962aa2b8e977dd93b1ba496",
     "entities": [
       {
         "tableName": "contacts",
@@ -61,14 +61,20 @@
         "foreignKeys": []
       },
       {
-        "tableName": "tasks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`taskId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `content` TEXT, `isDone` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER, `dueAt` INTEGER, `completedAt` INTEGER, `priority` INTEGER NOT NULL, `contactOwnerId` INTEGER, `linkedNoteId` INTEGER, FOREIGN KEY(`contactOwnerId`) REFERENCES `contacts`(`contactId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`linkedNoteId`) REFERENCES `notes`(`noteId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "tableName": "actions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`actionId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `contactOwnerId` INTEGER, `title` TEXT NOT NULL, `isDone` INTEGER NOT NULL, `priority` INTEGER NOT NULL, `dueAt` INTEGER, `completedAt` INTEGER, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER, FOREIGN KEY(`contactOwnerId`) REFERENCES `contacts`(`contactId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
-            "fieldPath": "taskId",
-            "columnName": "taskId",
+            "fieldPath": "actionId",
+            "columnName": "actionId",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "contactOwnerId",
+            "columnName": "contactOwnerId",
+            "affinity": "INTEGER",
+            "notNull": false
           },
           {
             "fieldPath": "title",
@@ -77,28 +83,16 @@
             "notNull": true
           },
           {
-            "fieldPath": "content",
-            "columnName": "content",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
             "fieldPath": "isDone",
             "columnName": "isDone",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "createdAt",
-            "columnName": "createdAt",
+            "fieldPath": "priority",
+            "columnName": "priority",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "updatedAt",
-            "columnName": "updatedAt",
-            "affinity": "INTEGER",
-            "notNull": false
           },
           {
             "fieldPath": "dueAt",
@@ -113,20 +107,14 @@
             "notNull": false
           },
           {
-            "fieldPath": "priority",
-            "columnName": "priority",
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "contactOwnerId",
-            "columnName": "contactOwnerId",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "linkedNoteId",
-            "columnName": "linkedNoteId",
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
             "affinity": "INTEGER",
             "notNull": false
           }
@@ -134,27 +122,18 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "taskId"
+            "actionId"
           ]
         },
         "indices": [
           {
-            "name": "index_tasks_contactOwnerId",
+            "name": "index_actions_contactOwnerId",
             "unique": false,
             "columnNames": [
               "contactOwnerId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_tasks_contactOwnerId` ON `${TABLE_NAME}` (`contactOwnerId`)"
-          },
-          {
-            "name": "index_tasks_linkedNoteId",
-            "unique": false,
-            "columnNames": [
-              "linkedNoteId"
-            ],
-            "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_tasks_linkedNoteId` ON `${TABLE_NAME}` (`linkedNoteId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_actions_contactOwnerId` ON `${TABLE_NAME}` (`contactOwnerId`)"
           }
         ],
         "foreignKeys": [
@@ -168,39 +147,22 @@
             "referencedColumns": [
               "contactId"
             ]
-          },
-          {
-            "table": "notes",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "linkedNoteId"
-            ],
-            "referencedColumns": [
-              "noteId"
-            ]
           }
         ]
       },
       {
-        "tableName": "notes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`noteId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `content` TEXT NOT NULL, `title` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER, `contactOwnerId` INTEGER, FOREIGN KEY(`contactOwnerId`) REFERENCES `contacts`(`contactId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "tableName": "insights",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`insightId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `content` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER, `contactOwnerId` INTEGER, `actionOwnerId` INTEGER, FOREIGN KEY(`contactOwnerId`) REFERENCES `contacts`(`contactId`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`actionOwnerId`) REFERENCES `actions`(`actionId`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
-            "fieldPath": "noteId",
-            "columnName": "noteId",
+            "fieldPath": "insightId",
+            "columnName": "insightId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
             "fieldPath": "content",
             "columnName": "content",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "title",
-            "columnName": "title",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -221,23 +183,38 @@
             "columnName": "contactOwnerId",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "actionOwnerId",
+            "columnName": "actionOwnerId",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "noteId"
+            "insightId"
           ]
         },
         "indices": [
           {
-            "name": "index_notes_contactOwnerId",
+            "name": "index_insights_contactOwnerId",
             "unique": false,
             "columnNames": [
               "contactOwnerId"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_notes_contactOwnerId` ON `${TABLE_NAME}` (`contactOwnerId`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_insights_contactOwnerId` ON `${TABLE_NAME}` (`contactOwnerId`)"
+          },
+          {
+            "name": "index_insights_actionOwnerId",
+            "unique": false,
+            "columnNames": [
+              "actionOwnerId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_insights_actionOwnerId` ON `${TABLE_NAME}` (`actionOwnerId`)"
           }
         ],
         "foreignKeys": [
@@ -251,6 +228,17 @@
             "referencedColumns": [
               "contactId"
             ]
+          },
+          {
+            "table": "actions",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "actionOwnerId"
+            ],
+            "referencedColumns": [
+              "actionId"
+            ]
           }
         ]
       }
@@ -258,7 +246,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ea26efac8a4bad1b91fbbe2c9bd6aed9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '53cdc635f962aa2b8e977dd93b1ba496')"
     ]
   }
 }
