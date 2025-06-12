@@ -2,10 +2,10 @@ package com.mehdiatique.core.data.di
 
 import com.mehdiatique.core.data.repository.ContactRepository
 import com.mehdiatique.core.data.repository.ContactRepositoryImpl
-import com.mehdiatique.core.data.repository.NoteRepository
-import com.mehdiatique.core.data.repository.NoteRepositoryImpl
-import com.mehdiatique.core.data.repository.TaskRepository
-import com.mehdiatique.core.data.repository.TaskRepositoryImpl
+import com.mehdiatique.core.data.repository.InsightRepository
+import com.mehdiatique.core.data.repository.InsightRepositoryImpl
+import com.mehdiatique.core.data.repository.ActionRepository
+import com.mehdiatique.core.data.repository.ActionRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -27,13 +27,13 @@ abstract class DataModule {
 
     @Binds
     @Singleton
-    abstract fun bindNoteRepository(
-        noteRepositoryImpl: NoteRepositoryImpl
-    ): NoteRepository
+    abstract fun bindInsightRepository(
+        insightRepositoryImpl: InsightRepositoryImpl
+    ): InsightRepository
 
     @Binds
     @Singleton
-    abstract fun bindTaskRepository(
-        taskRepositoryImpl: TaskRepositoryImpl
-    ): TaskRepository
+    abstract fun bindActionRepository(
+        actionRepositoryImpl: ActionRepositoryImpl
+    ): ActionRepository
 }

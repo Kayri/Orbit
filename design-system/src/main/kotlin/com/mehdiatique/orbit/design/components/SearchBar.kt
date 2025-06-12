@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
  * A reusable top app bar containing a search field.
  *
  * This composable is stateless and delegates all state and event handling to its caller,
- * making it suitable for reuse across different features (e.g., contacts, notes, tasks).
+ * making it suitable for reuse across different features (e.g., contacts, actions, insights).
  *
  * @param modifier Optional [Modifier] for customizing layout behavior (e.g., padding, width).
  * @param placeholder Optional placeholder text displayed inside the search field when empty.

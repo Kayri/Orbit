@@ -4,14 +4,21 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mehdiatique.core.data.model.Contact
+import com.mehdiatique.core.data.repository.ActionRepository
 import com.mehdiatique.core.data.repository.ContactRepository
-import com.mehdiatique.feature.contacts.navigation.ContactsRoute
+import com.mehdiatique.core.data.repository.InsightRepository
+import com.mehdiatique.core.navigation_contract.ContactNav
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,10 +33,12 @@ import javax.inject.Inject
 @HiltViewModel
 class ContactDetailViewModel @Inject constructor(
     private val contactRepository: ContactRepository,
+    private val insightRepository: InsightRepository,
+    private val actionRepository: ActionRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val contactId: Long? = savedStateHandle.get<String>(ContactsRoute.Detail.ARG_ID)?.toLong()
+    private val contactId: Long? = savedStateHandle.get<String>(ContactNav.ARG_CONTACT_ID)?.toLong()
 
     private val _state = MutableStateFlow(
         ContactDetailState(
@@ -46,23 +55,7 @@ class ContactDetailViewModel @Inject constructor(
     val uiEvent: SharedFlow<ContactDetailUiEvent> = _uiEvent
 
     init {
-        contactId?.let { id ->
-            viewModelScope.launch {
-                contactRepository.getContactById(id)
-                    .onStart { _state.update { it.copy(isLoading = true) } }
-                    .catch { e ->
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                error = e.message ?: e.cause?.message ?: "Unknown error"
-                            )
-                        }
-                    }
-                    .collect { contact ->
-                        _state.update { it.copy(contact = contact, isLoading = false) }
-                    }
-            }
-        }
+        contactId?.let { id -> observeContactDetails(id)}
     }
 
     /**
@@ -77,46 +70,27 @@ class ContactDetailViewModel @Inject constructor(
             is ContactDetailEvent.PhoneChanged -> updateContact { it.copy(phone = event.phone) }
             is ContactDetailEvent.CompanyChanged -> updateContact { it.copy(company = event.company) }
             is ContactDetailEvent.DescriptionChanged -> updateContact { it.copy(description = event.description) }
-
-            is ContactDetailEvent.CloseEdit -> {
-                _state.update { it.copy(mode = ContactDetailMode.VIEW) }
-            }
-
-            is ContactDetailEvent.EditContact -> {
-                _state.update { it.copy(mode = ContactDetailMode.EDIT) }
-            }
-
+            is ContactDetailEvent.CloseEdit -> _state.update { it.copy(mode = ContactDetailMode.VIEW) }
+            is ContactDetailEvent.EditContact -> _state.update { it.copy(mode = ContactDetailMode.EDIT) }
             is ContactDetailEvent.SaveContact -> saveContact()
+            is ContactDetailEvent.AddInsight -> _state.value.contact?.id?.let { contactId ->
+                onUiEvent(ContactDetailUiEvent.NavigateToAddInsight(contactId))
+            }
 
-            is ContactDetailEvent.AddNote -> {
+            is ContactDetailEvent.AddAction ->
                 _state.value.contact?.id?.let { contactId ->
-                    onUiEvent(ContactDetailUiEvent.NavigateToAddNote(contactId))
+                    onUiEvent(ContactDetailUiEvent.NavigateToAddAction(contactId))
                 }
-            }
 
-            is ContactDetailEvent.AddTask -> {
-                _state.value.contact?.id?.let { contactId ->
-                    onUiEvent(ContactDetailUiEvent.NavigateToAddTask(contactId))
-                }
-            }
-
-            is ContactDetailEvent.OpenNote -> {
-                onUiEvent(ContactDetailUiEvent.NavigateToNote(event.noteId))
-            }
-
-            is ContactDetailEvent.OpenTask -> {
-                onUiEvent(ContactDetailUiEvent.NavigateToTask(event.taskId))
-            }
-
-            is ContactDetailEvent.ErrorShown -> {
-                _state.update { it.copy(error = null) }
-            }
+            is ContactDetailEvent.OpenInsight -> onUiEvent(ContactDetailUiEvent.NavigateToInsight(event.insightId))
+            is ContactDetailEvent.OpenAction -> onUiEvent(ContactDetailUiEvent.NavigateToAction(event.actionId))
+            is ContactDetailEvent.ErrorShown -> _state.update { it.copy(error = null) }
         }
     }
 
     /**
      * Handles One-time UI events such as closing the screen, confirming a save,
-     * or navigating to related features like tasks or notes.
+     * or navigating to related features like actions or insights.
      *
      * @param event The event to process.
      */
@@ -125,6 +99,45 @@ class ContactDetailViewModel @Inject constructor(
             _uiEvent.emit(event)
         }
     }
+
+    private fun observeContactDetails(id: Long) {
+        viewModelScope.launch {
+            contactDetailFlow(id)
+                .onStart { _state.update { it.copy(isLoading = true) } }
+                .catch { e ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = e.message ?: e.cause?.message ?: "Unknown error"
+                        )
+                    }
+                }
+                .collect { details ->
+                    _state.update {
+                        it.copy(
+                            contact = details.contact,
+                            actions = details.actions,
+                            insights = details.insights,
+                            isLoading = false
+                        )
+                    }
+                }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun contactDetailFlow(id: Long): Flow<ContactDetails> =
+        contactRepository.getContactById(id).flatMapLatest { contact ->
+            val actionsFlow = actionRepository.getActionsForContact(id)
+            val insightsFlow = insightRepository.getInsightsForContact(id)
+            combine(
+                flowOf(contact),
+                actionsFlow,
+                insightsFlow
+            ) { contact, actions, insights ->
+                ContactDetails(contact = contact, actions = actions, insights = insights)
+            }
+        }
 
     private fun updateContact(modify: (Contact) -> Contact) {
         val currentContact = _state.value.contact ?: Contact(

@@ -5,7 +5,10 @@ import com.mehdiatique.core.database.entity.ContactEntity
 import com.mehdiatique.core.database.relationship.ContactWithRelations
 
 /**
- * Maps [ContactWithRelations] (including notes and tasks) to [Contact] domain model.
+ * Maps [ContactWithRelations] to [Contact] domain model.
+ *
+ * Note: This mapping only converts the [ContactEntity] part.
+ * Related actions and insights should be handled separately.
  */
 fun ContactWithRelations.toDomain() = Contact(
     id = contact.contactId,
@@ -14,22 +17,7 @@ fun ContactWithRelations.toDomain() = Contact(
     phone = contact.phone,
     company = contact.company,
     description = contact.description,
-    createdAt = contact.createdAt,
-    noteList = notes.map { it.toDomain()},
-    taskList = tasks.map { it.toDomain() }
-)
-
-/**
- * Maps [ContactEntity] to [Contact] domain model without relations.
- */
-fun ContactEntity.toDomain() = Contact(
-    id = contactId,
-    name = name,
-    email = email,
-    phone = phone,
-    company = company,
-    description = description,
-    createdAt = createdAt,
+    createdAt = contact.createdAt
 )
 
 /**

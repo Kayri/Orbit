@@ -1,6 +1,8 @@
 package com.mehdiatique.feature.contacts.presentation.details
 
+import com.mehdiatique.core.data.model.Action
 import com.mehdiatique.core.data.model.Contact
+import com.mehdiatique.core.data.model.Insight
 
 /**
  * Represents the UI state of the Contact Detail screen.
@@ -11,6 +13,8 @@ import com.mehdiatique.core.data.model.Contact
 data class ContactDetailState(
     val contact: Contact? = null,
     val mode: ContactDetailMode = ContactDetailMode.ADD,
+    val actions: List<Action> = emptyList(),
+    val insights: List<Insight> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 )
