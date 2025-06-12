@@ -7,12 +7,25 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.mehdiatique.core.navigation_contract.ContactNav
 import com.mehdiatique.core.navigation_contract.InsightNav
+import com.mehdiatique.core.ui_contract.ScreenUIConfig
 import com.mehdiatique.feature.insight.presentation.InsightsScreen
 import com.mehdiatique.feature.insight.presentation.details.InsightDetailScreen
 
-fun NavGraphBuilder.insightNavGraph(navController: NavController) {
+fun NavGraphBuilder.insightNavGraph(
+    navController: NavController,
+    setConfig: (ScreenUIConfig) -> Unit
+) {
     composable(route = InsightRoute.List.route) {
-        InsightsScreen(navigateToDetail = { insightId -> navController.navigate(InsightNav.detailRoute(insightId = insightId)) })
+        InsightsScreen(
+            navigateToDetail = { insightId ->
+                navController.navigate(
+                    InsightNav.detailRoute(
+                        insightId = insightId
+                    )
+                )
+            },
+            setConfig = setConfig
+        )
     }
     composable(
         route = InsightRoute.Detail.route,
@@ -36,7 +49,8 @@ fun NavGraphBuilder.insightNavGraph(navController: NavController) {
                     popUpTo(ContactNav.routePattern()) { inclusive = false }
                     launchSingleTop = true
                 }
-            }
+            },
+            setConfig = setConfig
         )
     }
 }

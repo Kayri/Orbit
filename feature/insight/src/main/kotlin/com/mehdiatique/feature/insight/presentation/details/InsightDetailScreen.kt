@@ -1,35 +1,85 @@
 package com.mehdiatique.feature.insight.presentation.details
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope.ResizeMode
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.mehdiatique.orbit.design.transition.LocalAnimatedVisibilityScope
-import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
+import com.mehdiatique.core.ui_contract.ScreenUIConfig
+import com.mehdiatique.feature.insight.presentation.details.components.EditSection
+import com.mehdiatique.feature.insight.presentation.details.components.ViewSection
 
-
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsightDetailScreen(
     viewModel: InsightDetailViewModel = hiltViewModel(),
     onClose: () -> Unit,
-    onNavigateToContact: (Long) -> Unit
+    onNavigateToContact: (Long) -> Unit,
+    setConfig: (ScreenUIConfig) -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val sharedTransitionScope = LocalSharedTransitionScope.current
-    val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
+    LaunchedEffect(state.insight, state.mode) {
+        setConfig(
+            ScreenUIConfig(
+                topBar = {
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = when (state.mode) {
+                                    InsightDetailMode.ADD -> "New Insight"
+                                    InsightDetailMode.EDIT -> "Edit Insight"
+                                    InsightDetailMode.VIEW -> "View Insight"
+                                }
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = {
+                                if (state.mode == InsightDetailMode.EDIT) viewModel.onEvent(
+                                    InsightDetailEvent.CloseEdit
+                                )
+                                else viewModel.onUiEvent(InsightDetailUiEvent.CloseScreen)
 
-    val sharedKey = state.insight.id.let { "insight-$it" }
+                            }) {
+                                Icon(Icons.Default.Close, contentDescription = "Close")
+                            }
+                        },
+                        actions = {
+                            if (state.mode.isEditable()) {
+                                TextButton(
+                                    onClick = { viewModel.onEvent(InsightDetailEvent.SaveInsight) },
+                                    enabled = state.insight.content.isNotBlank()
+                                ) {
+                                    Text("Save")
+                                }
+                            } else {
+                                IconButton(onClick = { viewModel.onEvent(InsightDetailEvent.EditInsight) }) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Edit")
+                                }
+                            }
+                        }
+                    )
+                },
+                snackbarHostState = snackbarHostState
+            )
+        )
+    }
 
     LaunchedEffect(state.error) {
         state.error?.let { errorMsg ->
@@ -48,19 +98,26 @@ fun InsightDetailScreen(
         }
     }
 
-    with(sharedTransitionScope) {
-        InsightDetailContent(
-            state = state,
-            snackbarHostState = snackbarHostState,
-            onEvent = viewModel::onEvent,
-            onUiEvent = viewModel::onUiEvent,
-            modifier = Modifier.sharedBounds(
-                sharedContentState = rememberSharedContentState(key = sharedKey),
-                animatedVisibilityScope = animatedVisibilityScope,
-                enter = fadeIn(),
-                exit = fadeOut(),
-                resizeMode = ResizeMode.ScaleToBounds()
-            )
-        )
+    InsightDetailContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+    )
+}
+
+@Composable
+fun InsightDetailContent(
+    state: InsightDetailState,
+    onEvent: (InsightDetailEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+    ) {
+        if (state.mode.isEditable()) {
+            EditSection(insight = state.insight, contacts = state.contacts, onEvent = onEvent)
+        } else {
+            ViewSection(insight = state.insight, onEvent = onEvent)
+        }
     }
 }

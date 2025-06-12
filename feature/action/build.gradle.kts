@@ -11,6 +11,7 @@ android {
 dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:navigation-contract"))
+    implementation(project(":core:ui-contract"))
     implementation(project(":design-system"))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation)

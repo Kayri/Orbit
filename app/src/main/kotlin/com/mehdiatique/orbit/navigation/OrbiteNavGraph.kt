@@ -20,8 +20,8 @@ fun NavGraphBuilder.orbitNavGraph(
     setConfig: (ScreenUIConfig) -> Unit
 ) {
     contactsNavGraph(navController = navController, setConfig = setConfig)
-    insightNavGraph(navController)
-    actionNavGraph(navController)
+    insightNavGraph(navController = navController, setConfig = setConfig)
+    actionNavGraph(navController = navController, setConfig = setConfig)
 }
 
 /**

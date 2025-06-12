@@ -38,11 +38,10 @@ fun OrbitBottomBar(
                 onClick = {
                     if (currentRoute != route.route) {
                         navController.navigate(route.route) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
+                            popUpTo(route.route) {
+                                inclusive = true
                             }
                             launchSingleTop = true
-                            restoreState = true
                         }
                     }
                 },

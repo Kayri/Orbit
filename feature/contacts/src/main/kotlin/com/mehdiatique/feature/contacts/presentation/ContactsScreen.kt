@@ -1,9 +1,5 @@
 package com.mehdiatique.feature.contacts.presentation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope.ResizeMode
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,11 +23,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mehdiatique.core.data.model.Contact
 import com.mehdiatique.core.ui_contract.ScreenUIConfig
-import com.mehdiatique.orbit.design.components.AnimatedFab
+import com.mehdiatique.orbit.design.components.OrbitFab
 import com.mehdiatique.orbit.design.components.SearchBar
 import com.mehdiatique.orbit.design.theme.OrbitTheme
-import com.mehdiatique.orbit.design.transition.LocalAnimatedVisibilityScope
-import com.mehdiatique.orbit.design.transition.LocalSharedTransitionScope
 
 /**
  * The main screen for displaying and managing contacts.
@@ -51,21 +45,21 @@ fun ContactsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val state: ContactsState by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        setConfig(
-            ScreenUIConfig(
-                topBar = {
-                    SearchBar(
-                        query = state.searchQuery,
-                        onQueryChange = { viewModel.onEvent(ContactsEvent.SearchQueryChanged(it)) },
-                        placeholder = "Search contacts"
-                    )
-                },
-                fab = { AnimatedFab(contentDescription = "Add Contact") { navigateToDetail(null) } },
-                snackbarHostState = snackbarHostState
-            )
+    val config = remember(state.searchQuery) {
+        ScreenUIConfig(
+            topBar = {
+                SearchBar(
+                    query = state.searchQuery,
+                    onQueryChange = { viewModel.onEvent(ContactsEvent.SearchQueryChanged(it)) },
+                    placeholder = "Search contacts"
+                )
+            },
+            fab = { OrbitFab(contentDescription = "Add Contact") { navigateToDetail(null) } },
+            snackbarHostState = snackbarHostState
         )
     }
+
+    LaunchedEffect(config) { setConfig(config) }
 
     LaunchedEffect(state.error) {
         state.error?.let { errorMsg ->
@@ -102,35 +96,22 @@ fun ContactsScreenContent(
  * @param contact The contact data to display.
  * @param onClick Callback triggered when the item is tapped.
  */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ContactItem(contact: Contact, onClick: () -> Unit) {
-    val sharedTransitionScope = LocalSharedTransitionScope.current
-    val animatedVisibilityScope = LocalAnimatedVisibilityScope.current
-
-    with(sharedTransitionScope) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .sharedBounds(
-                    sharedContentState = rememberSharedContentState(key = "contact-${contact.id}"),
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    resizeMode = ResizeMode.ScaleToBounds()
-                ),
-            onClick = onClick
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(text = contact.name, style = MaterialTheme.typography.titleMedium)
-                    contact.email?.let {
-                        Text(text = it, style = MaterialTheme.typography.bodyMedium)
-                    }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = contact.name, style = MaterialTheme.typography.titleMedium)
+                contact.email?.let {
+                    Text(text = it, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

@@ -41,13 +41,20 @@ fun NavGraphBuilder.contactsNavGraph(
             onClose = { navController.popBackStack() },
             onNavigateToAddAction = { contactId -> },
             onNavigateToAction = { actionId -> },
-            onNavigateToAddInsight = { contactId -> navController.navigate(InsightNav.detailRoute(contactId = contactId)) },
+            onNavigateToAddInsight = { contactId ->
+                navController.navigate(
+                    InsightNav.detailRoute(
+                        contactId = contactId
+                    )
+                )
+            },
             onNavigateToInsight = { insightId ->
                 navController.navigate(InsightNav.detailRoute(insightId = insightId)) {
                     popUpTo(InsightNav.routePattern()) { inclusive = false }
                     launchSingleTop = true
                 }
             },
+            setConfig = setConfig
         )
     }
 }
