@@ -8,13 +8,15 @@ This document outlines the architecture vision and phased development plan for t
 
 ```
 core/
-├── database       # Room DB, DAOs, Entities
-├── data           # Repository implementations, sync, AI access
+├── data                # Repository implementations, sync, AI access
+├── database            # Room DB, DAOs, Entities
+├── navigation-contract # Navigation route + key (bridge)
+├── ui-contract         # Screen Ui Config (bridge)
 
 feature/
+├── actions        # Actions (tasks) UI, logic, contact linking
 ├── contacts       # Contact-related UI, logic, use cases
-├── notes          # Notes UI, use cases, AI processing, etc.
-├── tasks          # To-dos/reminders related to notes or contacts
+├── insights       # Insights UI, use cases, tagging, linking
 ```
 
 Each `feature` module follows clean architecture:
@@ -26,26 +28,26 @@ Each `feature` module follows clean architecture:
 
 ## ✅ Phase 1: Local-Only Functionality
 
-**Goal:** Fully offline Orbit app with support for Contacts, Notes, and Tasks using Room.
+**Goal:** Fully offline Orbit app with support for Contacts, Insights, and Actions using Room.
 
 ### 🧩 Core Modules
 
 #### `core:database`
 Handles all Room-related logic, including entity definitions and DAO interfaces.
 
-- [x] Define `NoteEntity`, `ContactEntity`, `TaskEntity`
-- [x] Create `NoteDao`, `ContactDao`, `TaskDao`
+- [x] Define `ContactEntity`, `InsightEntity`, `ActionEntity`
+- [x] Create `ContactDao`, `InsightDao`, `ActionDao`
 - [x] Configure `OrbitDatabase`
 
 #### `core:data`
-Responsible for data coordination, mapping, and shared logic (to be extended in Phase 2).
+Responsible for data coordination, mapping, and shared logic.
 
 - [x] Implement Repositories:
-  - [x] `NoteRepositoryImpl`
   - [x] `ContactRepositoryImpl`
-  - [x] `TaskRepositoryImpl`
+  - [x] `InsightRepositoryImpl`
+  - [x] `ActionRepositoryImpl`
 - [x] Handle mapping: Entity ↔ Domain Model
-- [x] Provide unified access point for features & AI engine
+- [x] Provide unified access point for features
 
 ---
 
@@ -53,81 +55,84 @@ Responsible for data coordination, mapping, and shared logic (to be extended in 
 
 #### `feature:contacts`
 - Domain Model: `Contact`
-- Responsibilities: Contact management, owner links to notes/tasks
+- Responsibilities: Contact management, linking to actions/insights
 - UI Screens:
-  - Contact list, detail (view/edit)
+  - Contact list
+  - Contact detail (view/edit with related actions & insights)
 - Use Cases:
   - `GetContacts`, `SearchContacts`, `GetContactById`, `AddContact`, `UpdateContact`, `DeleteContact`
 
-#### `feature:notes`
-- Domain Model: `Note`
-- Responsibilities: Note creation, linking to contacts, editable content
+#### `feature:insights`
+- Domain Model: `Insight`
+- Responsibilities: Insight creation and linking to contacts or actions
 - UI Screens:
-  - Note list, detail (with contact info)
+  - Insight list
+  - Insight detail
 - Use Cases:
-  - `GetNotes`, `GetNoteByContactId`, `GetNoteById`, `AddNote`, `UpdateNote`, `DeleteNote`
-- Planned:
-  - Inline display of related tasks & owner info
+  - `GetInsights`, `GetInsightsForContact`, `GetInsightsForAction`, `AddInsight`, `UpdateInsight`, `DeleteInsight`
 
-#### `feature:tasks`
-- Domain Model: `Task`
-- Responsibilities: Task management (standalone or linked to notes/contacts)
+#### `feature:actions`
+- Domain Model: `Action`
+- Responsibilities: Action tracking (like to-dos), linkable to contacts or insights
 - UI Screens:
-  - Task list, detail, link to context
+  - Action list
+  - Action detail
 - Use Cases:
-  - `GetTasks`, `AddTask`, `UpdateTask`, `GetTasksForNoteOrContact`,....
+  - `GetActions`, `AddAction`, `UpdateAction`, `GetActionsForContact`, `DeleteAction`
 
 ---
 
-## 🧠 Phase 2: Local AI Integration
+## 🤖 Phase 2: Local AI Integration
 
-**Goal:** Integrate on-device AI to enrich user interaction and automate data handling.
+**Goal:** Enable on-device AI assistance via text and speech input.
 
-### AI Engine (Local)
-- [ ] Integrate speech-to-text
-- [ ] Integrate `Mistral` for local LLM processing
-- [ ] Add `AiParser` in `core:data` to:
-  - [ ] Interpret natural input into structured notes/tasks/contacts
-  - [ ] Auto-link related items
-  - [ ] Suggest content based on previous data
-- [ ] AI Use Cases:
-  - `GenerateContactFromSpeech`, `GenerateNoteFromSpeech`, `GenerateTaskFromSpeech`
-- [ ] Smart UI:
-  - AI assistant screen with free-form input
-  - Smart suggestions panel in detail screens
+### 🧠 Local AI Features
+
+#### Step 1: **Text-Based AI Input**
+- [ ] Add new screen with a TextField and "Submit" button
+- [ ] `AiParser` parses input into: `Contact`, `Insight`, or `Action`
+- [ ] Display parsed result for review and confirmation
+- [ ] Integrate with existing repositories to save data
+
+#### Step 2: **Speech-to-Text Integration**
+- [ ] Add mic button to assistant screen
+- [ ] Use `whisper.cpp` or similar for on-device transcription
+- [ ] Transcribed result sent to `AiParser`
+
+#### Step 3: **Smart UI & Feedback**
+- [ ] Show AI processing status (e.g., "Parsing...", "Done")
+- [ ] Allow users to approve or discard AI suggestions
+- [ ] Store recent inputs and parsed results for testing/debugging
+
+### Supporting Code
+- `core:data` will contain `AiParser`, `AiResult`, and relevant logic
+- Optional: Create `feature:aiassistant` module for dedicated UI
 
 ---
 
-## 🔄 Phase 3: Online Sync & Cloud Backup
+## 🔄 Phase 3: Online Sync & Cloud Backup *(Planned)*
 
-**Goal:** Add online sync, cloud storage, and optional account-based access.
-
-- [ ] Add sync engine in `core:data`:
-  - [ ] Track dirty state, manage timestamps
-  - [ ] Push/pull changes with backend
-  - [ ] Handle conflict resolution
-- [ ] Configure remote provider (Firebase, Supabase, custom backend)
-- [ ] Add backup/restore capability
-- [ ] Add settings screen for sync control
-- [ ] Add encryption layer for privacy before sync
+- Cloud sync & backup
+- Conflict resolution & timestamp handling
+- User settings for sync control
+- Data encryption layer
 
 ---
 
 ## 🧪 Optional Future Phase: Multi-device + Auth
 
-- [ ] Sign-in system (OAuth/Firebase/Supabase)
-- [ ] Per-user data syncing
-- [ ] Linked to Third-Party features (e.g., `Calendar`)
-- [ ] Activity history or analytics
+- User sign-in
+- Account-based data isolation
+- Cloud calendar or app integrations
+- Analytics and activity history
 
 ---
 
-## 🚧 Notes
+## 📌 Notes
 
-- Every feature module (`contacts`, `notes`, `tasks`) follows: `data/`, `domain/`, `presentation/`
-- `core:data` handles shared responsibilities: sync, AI, cross-feature linking
-- `core:database` is low-level persistence only (no app logic)
-- ViewModels in `presentation` depend on `domain` use cases only
-- Use UI-specific models for screens (e.g., `NoteDetailModel`) if needed
+- Each feature module is decoupled and testable in isolation
+- `core:data` will grow to support AI and sync logic
+- `core:database` is a passive data layer
+- Compose-based UI follows one-way data flow via ViewModel → State → UI
 
 ---
