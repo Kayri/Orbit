@@ -1,6 +1,7 @@
 package com.mehdiatique.orbit.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -10,6 +11,8 @@ import androidx.navigation.NavGraphBuilder
 import com.mehdiatique.core.ui_contract.ScreenUIConfig
 import com.mehdiatique.feature.action.navigation.ActionRoute
 import com.mehdiatique.feature.action.navigation.actionNavGraph
+import com.mehdiatique.feature.assistant.navigation.AssistantRoute
+import com.mehdiatique.feature.assistant.navigation.assistantNavGraph
 import com.mehdiatique.feature.contacts.navigation.ContactsRoute
 import com.mehdiatique.feature.contacts.navigation.contactsNavGraph
 import com.mehdiatique.feature.insight.navigation.InsightRoute
@@ -22,6 +25,7 @@ fun NavGraphBuilder.orbitNavGraph(
     contactsNavGraph(navController = navController, setConfig = setConfig)
     insightNavGraph(navController = navController, setConfig = setConfig)
     actionNavGraph(navController = navController, setConfig = setConfig)
+    assistantNavGraph(navController = navController, setConfig = setConfig)
 }
 
 /**
@@ -55,7 +59,13 @@ sealed class OrbitRoute(
         icon = Icons.Filled.Check
     )
 
+    object Assistant : OrbitRoute(
+        route = AssistantRoute.Chat.route,
+        label = "AI",
+        icon = Icons.Filled.Build
+    )
+
     companion object {
-        val mainRoutes = listOf(Contacts, Actions, Insights)
+        val mainRoutes = listOf(Contacts, Actions, Insights, Assistant)
     }
 }

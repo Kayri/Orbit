@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":feature:contacts"))
     implementation(project(":feature:insight"))
     implementation(project(":feature:action"))
+    implementation(project(":feature:assistant"))
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation)
 
