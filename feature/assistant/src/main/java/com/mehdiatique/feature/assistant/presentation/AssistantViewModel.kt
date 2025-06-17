@@ -3,6 +3,7 @@ package com.mehdiatique.feature.assistant.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mehdiatique.feature.assistant.presentation.model.AssistantMessage
+import com.mehdiatique.llamawrapper.LlamaBridge
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,13 +24,16 @@ class AssistantViewModel @Inject constructor(
     val state: StateFlow<AssistantState> = _state.asStateFlow()
 
     init {
+        val response = LlamaBridge.runPrompt("Hello from Kotlin!")
         _state.update {
             AssistantState(
-                messages = listOf(AssistantMessage.FromAssistant("Hi 👋 I'm your assistant. What can I help you with today?"))
+                messages = listOf(
+                    AssistantMessage.FromAssistant("Hi 👋 I'm your assistant. What can I help you with today?"),
+                    AssistantMessage.FromAssistant(response),
+                    )
             )
         }
     }
-
 
     /**
      * Processes user events from the UI and updates state accordingly.

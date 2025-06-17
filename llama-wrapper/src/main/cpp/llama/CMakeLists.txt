@@ -1,0 +1,31 @@
+# cpp/llama/CMakeLists.txt
+add_library(llama
+        llama.cpp
+        llama-adapter.cpp
+        llama-arch.cpp
+        llama-batch.cpp
+        llama-chat.cpp
+        llama-context.cpp
+        llama-cparams.cpp
+        llama-graph.cpp
+        llama-hparams.cpp
+        llama-impl.cpp
+        llama-io.cpp
+        llama-kv-cache-recurrent.cpp
+        llama-kv-cache-unified.cpp
+        llama-kv-cache-unified-iswa.cpp
+        llama-memory.cpp
+        llama-mmap.cpp
+        llama-model.cpp
+        llama-model-loader.cpp
+        llama-model-saver.cpp
+        llama-vocab.cpp
+        unicode.cpp
+        unicode-data.cpp
+)
+target_include_directories(
+        llama
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../ggml
+)

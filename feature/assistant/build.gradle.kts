@@ -11,6 +11,8 @@ android {
 dependencies {
     implementation(project(":core:ui-contract"))
     implementation(project(":design-system"))
+    implementation(project(":design-system"))
+    implementation(project(":llama-wrapper"))
     implementation(libs.androidx.material3)
 
     testImplementation(libs.junit)
