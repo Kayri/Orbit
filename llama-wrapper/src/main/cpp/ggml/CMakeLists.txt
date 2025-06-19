@@ -1,10 +1,13 @@
 # cpp/ggml/CMakeLists.txt
 add_library(ggml
         ggml.c
+        ggml-alloc.c
+        ggml-backend-reg.cpp
         ggml-backend.cpp
         ggml-opt.cpp
         ggml-quants.c
         ggml-threading.cpp
+        gguf.cpp
 )
 add_subdirectory(ggml-cpu)
 
