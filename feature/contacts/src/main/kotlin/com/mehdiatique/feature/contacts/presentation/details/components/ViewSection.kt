@@ -19,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mehdiatique.core.data.model.Action
 import com.mehdiatique.core.data.model.Contact
+import com.mehdiatique.core.data.model.Insight
 import com.mehdiatique.feature.contacts.presentation.details.ContactDetailEvent
 import com.mehdiatique.feature.contacts.presentation.details.ContactDetailState
 
@@ -53,6 +55,14 @@ fun ViewSection(
                 onEvent(ContactDetailEvent.AddAction)
             }, icon = Icons.Default.Add)
 
+            state.actions
+                .take(4)
+                .forEach { action ->
+                    PlaceholderItem(
+                        content = action.title,
+                        onClick = { onEvent(ContactDetailEvent.OpenAction(action.id)) }
+                    )
+                }
         }
     }
 }
@@ -75,7 +85,11 @@ fun ContactInfoSection(contact: Contact) {
  * Header row with title and add button, used for Actions and Insights.
  */
 @Composable
-fun SectionHeader(title: String, onAddClick: () -> Unit, icon: androidx.compose.ui.graphics.vector.ImageVector) {
+fun SectionHeader(
+    title: String,
+    onAddClick: () -> Unit,
+    icon: androidx.compose.ui.graphics.vector.ImageVector
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
@@ -108,7 +122,6 @@ fun PlaceholderItem(content: String, onClick: () -> Unit) {
 }
 
 
-
 @Preview(showBackground = true)
 @Composable
 fun ContactInfoSectionPreview() {
@@ -125,4 +138,33 @@ fun ContactInfoSectionPreview() {
             )
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ViewSectionPreview() {
+    ViewSection(
+        state = ContactDetailState(
+            contact = Contact(
+                id = 1L,
+                name = "Ada Lovelace",
+                email = "ada@analyticalengine.com",
+                phone = "123456789",
+                company = "Analytical Engines Ltd.",
+                description = "First computer programmer",
+                createdAt = 0L
+            ),
+            insights = listOf(
+                Insight(id = 101L, content = "Ada likes mathematics."),
+                Insight(id = 102L, content = "She collaborated with Babbage."),
+                Insight(id = 103L, content = "She predicted general-purpose computing."),
+                Insight(id = 104L, content = "Also known for her poetic metaphors."),
+            ),
+            actions = listOf(
+                Action(id = 1L, createdAt = 1L, title = "Follow up about her algorithm."),
+                Action(id = 2L, createdAt = 1L, title = "Schedule podcast about her legacy.")
+            )
+        ),
+        onEvent = {}
+    )
 }
